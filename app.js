@@ -74,6 +74,12 @@
 
   const apiSources = [
     {
+      name: "gold-api.com",
+      url: "https://api.gold-api.com/price/XAU/USD",
+      headers: {}, // No requiere autenticación
+      parse: (data) => (data && typeof data.price === "number" && data.price > 0 ? data.price : null)
+    },
+    {
       name: "goldapi.io",
       url: "https://www.goldapi.io/api/XAU/USD",
       headers: { "x-access-token": "goldapi-9bf9dcfd2c5429df67786cf24e672b4b-io" },
@@ -131,7 +137,7 @@
   }
 
   fetchSpot();
-  setInterval(fetchSpot, 5 * 60 * 1000);
+  setInterval(fetchSpot, 6 * 60 * 1000);
 
   /* ---------- cart ---------- */
   const CART_KEY = "dky-cart";
