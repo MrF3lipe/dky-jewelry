@@ -89,25 +89,11 @@
         const oz = data?.items?.[0]?.xauPrice;
         return typeof oz === "number" && oz > 0 ? oz : null;
       }
-    },
-    {
-      name: "freegoldapi.com",
-      url: "https://freegoldapi.com/data/latest.json",
-      headers: {},
-      parse: (data) => {
-        if (!Array.isArray(data) || data.length === 0) return null;
-        const latest = data[data.length - 1];
-        const price = latest?.price;
-        return typeof price === "number" && price > 0 ? price : null;
-      }
     }
   ];
 
   async function fetchSpot() {
     for (const source of apiSources) {
-      try {
-        console.log(`Intentando obtener precio desde ${source.name}...`);
-        
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 8000);
         
@@ -131,19 +117,10 @@
           spotState.source = source.name;
           spotState.updatedAt = new Date();
           
-          console.log(`✅ Precio obtenido desde ${source.name}: $${ozPrice}/oz ($${spotState.perGram.toFixed(2)}/g)`);
           emitSpot();
           return;
-        } else {
-          console.warn(`⚠️ ${source.name} devolvió precio inválido`);
         }
-        
-      } catch (error) {
-        console.warn(`❌ Error con ${source.name}:`, error.message);
-      }
     }
-    
-    console.error("Todas las fuentes fallaron");
     if (!spotState.perOz) {
       spotState.perOz = CFG.FALLBACK_USD_PER_OZ;
       spotState.perGram = CFG.FALLBACK_USD_PER_OZ / GRAMS_PER_OZ;
