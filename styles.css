@@ -1,4 +1,3 @@
-/* ============= DKY Jewelry — Static styles (v5 Dark Premium) ============= */
 :root {
   --background: oklch(0.18 0.012 60);
   --foreground: oklch(0.97 0.01 80);
@@ -49,7 +48,7 @@ h1,h2,h3,h4 { font-family: var(--font-display); margin: 0; letter-spacing: -0.01
 .small { font-size: 14px; }
 .xsmall { font-size: 12px; }
 
-/* ============ Background ambient glow ============ */
+/* ============ Fondo ambiental con brillo ============ */
 #bg-glow {
   position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden;
 }
@@ -70,6 +69,7 @@ h1,h2,h3,h4 { font-family: var(--font-display); margin: 0; letter-spacing: -0.01
 .brand { display: inline-flex; align-items: center; gap: 12px; }
 .brand img { width: 40px; height: 40px; object-fit: contain; }
 .brand-text { font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: 0.15em; }
+@media (max-width: 375px) {.brand-text-up { visibility: hidden; }}
 .brand-text small { opacity: 0.6; font-size: 12px; font-weight: 400; letter-spacing: 0.1em; margin-left: 4px; }
 .main-nav { display: none; gap: 28px; }
 .main-nav a { font-size: 14px; font-weight: 500; color: color-mix(in oklab, var(--foreground) 70%, transparent); transition: color .15s; }
@@ -93,7 +93,7 @@ h1,h2,h3,h4 { font-family: var(--font-display); margin: 0; letter-spacing: -0.01
   border-radius: 999px; font-size: 11px; font-weight: 700;
 }
 
-/* ============ Buttons & primitives ============ */
+/* ============ Botones y primitivas ============ */
 .btn-primary {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 14px 28px; border-radius: 999px; border: 0;
@@ -135,7 +135,7 @@ h1,h2,h3,h4 { font-family: var(--font-display); margin: 0; letter-spacing: -0.01
   backdrop-filter: blur(16px);
 }
 
-/* ============ Home ============ */
+/* ============ Inicio ============ */
 .hero { padding: 64px 0 48px; }
 .hero-frame {
   border: 1px solid color-mix(in oklab, var(--gold) 22%, transparent);
@@ -189,7 +189,7 @@ h1,h2,h3,h4 { font-family: var(--font-display); margin: 0; letter-spacing: -0.01
 .showcase-link strong { display: block; }
 .showcase-link span.sub { font-size: 13px; color: var(--muted-fg); }
 
-/* ============ Shop ============ */
+/* ============ Tienda ============ */
 .shop { padding: 64px 0; }
 .shop-head { max-width: 640px; margin-bottom: 32px; }
 .shop-head h1 { font-size: clamp(32px, 5vw, 48px); margin-top: 20px; font-weight: 700; }
@@ -238,18 +238,30 @@ h1,h2,h3,h4 { font-family: var(--font-display); margin: 0; letter-spacing: -0.01
 .product-price { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--gold-bright); }
 .product-view { font-size: 12px; color: color-mix(in oklab, var(--foreground) 70%, transparent); display: inline-flex; align-items: center; gap: 4px; }
 .product-card:hover .product-view { color: var(--gold-bright); }
-.add-btn {
+.add-btn, .whatsapp-inquiry {
   margin-top: 16px;
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 10px 16px; border-radius: 999px; border: 0;
   background: var(--gold-bright); color: var(--background);
   font-size: 14px; font-weight: 600; transition: all .2s;
-
+  margin-bottom: 10px;
 }
-.add-btn:hover { box-shadow: 0 0 30px -8px color-mix(in oklab, var(--gold-bright) 60%, transparent); }
+.add-btn:hover, .whatsapp-inquiry:hover{ box-shadow: 0 0 30px -8px color-mix(in oklab, var(--gold-bright) 60%, transparent); }
 .add-btn.added { background: var(--gold-deep); }
 
-/* ============ Product detail ============ */
+.whatsapp-inquiry {
+  border: 2px solid var(--gold-bright);
+  background: transparent;
+  color: var(--gold-bright);
+}
+
+.whatsapp-inquiry:hover {
+  background: var(--gold-bright);
+  color: var(--background);
+  transform: translateY(-1px);
+}
+
+/* ============ Detalle de producto ============ */
 .product-page { padding: 48px 0; }
 .back-link { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted-fg); margin-bottom: 32px; }
 .back-link:hover { color: var(--gold-bright); }
@@ -278,7 +290,7 @@ h1,h2,h3,h4 { font-family: var(--font-display); margin: 0; letter-spacing: -0.01
 .related-grid { display: grid; gap: 24px; grid-template-columns: 1fr; }
 @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
 
-/* ============ Sell gold ============ */
+/* ============ Vender oro ============ */
 .sell { padding: 48px 0; }
 .sell-head { margin-bottom: 32px; }
 .sell-head h1 { font-size: clamp(32px, 5vw, 48px); margin-top: 20px; font-weight: 700; }
@@ -377,7 +389,7 @@ h1,h2,h3,h4 { font-family: var(--font-display); margin: 0; letter-spacing: -0.01
 .quote-cta { width: 100%; margin-top: 24px; }
 .quote-foot { text-align: center; font-size: 11px; color: var(--muted-fg); margin-top: 12px; }
 
-/* ============ Cart drawer ============ */
+/* ============ Carrito drawer ============ */
 
 .overlay { 
   position: fixed; 
@@ -430,35 +442,19 @@ h1,h2,h3,h4 { font-family: var(--font-display); margin: 0; letter-spacing: -0.01
 .drawer-foot .clear:hover { color: var(--rose); }
 
 /* ============ Footer ============ */
-#site-footer { border-top: 1px solid color-mix(in oklab, var(--gold) 15%, transparent); margin-top: 80px; padding: 40px 0; }
+#site-footer { border-top: 1px solid color-mix(in oklab, var(--gold) 15%, transparent); margin-top: 80px; padding: 40px 0; text-align: center;}
 .footer-inner { display: grid; gap: 24px; grid-template-columns: 1fr; align-items: start; }
-@media (min-width: 768px) { .footer-inner { grid-template-columns: 1fr auto auto; } }
+@media (min-width: 768px) {
+  .footer-inner {
+    grid-template-columns: 1fr auto auto;
+    
+  }
+}
 .footer-links { display: flex; gap: 24px; }
 .footer-links a { font-size: 14px; color: var(--muted-fg); }
 .footer-links a:hover { color: var(--gold-bright); }
-
-.whatsapp-inquiry {
-  margin-top: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 999px;
-  border: 2px solid var(--gold-bright);
-  background: transparent;
-  color: var(--gold-bright);
-  font-size: 14px;
-  font-weight: 600;
-  transition: all .2s;
-  text-decoration: none;
-  width: 100%;
-  min-height: 44px;
-  cursor: pointer;
+.last{
+  min-width: max-content;
+  align-self: center;
 }
 
-.whatsapp-inquiry:hover {
-  background: var(--gold-bright);
-  color: var(--background);
-  transform: translateY(-1px);
-}
