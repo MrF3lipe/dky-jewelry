@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DKY Jewelry — Fine Gold & Live Buy-Back</title>
+  <meta name="description" content="Shop fine 14k–22k gold jewelry and sell your gold at live international rates. Transparent, fair, fast." />
+  <meta property="og:title" content="DKY Jewelry — Fine Gold & Live Buy-Back" />
+  <meta property="og:description" content="Shop fine gold jewelry and sell your gold at live international rates." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="assets/dky-logo.png" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="bg-glow">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+  </div>
+
+  <header id="site-header">
+    <div class="container header-inner">
+      <a href="#/" class="brand">
+        <img src="assets/dky-logo.png" alt="DKY Jewelry" width="40" height="40" />
+        <span class="brand-text">DKY <small>JEWELRY</small></span>
+      </a>
+      <nav class="main-nav" id="main-nav">
+        <a href="#/shop" data-route="/shop">Shop Jewelry</a>
+        <a href="#/sell-gold" data-route="/sell-gold">Sell Your Gold</a>
+      </nav>
+      <div class="header-actions">
+        <button type="button" id="cart-btn" class="btn-icon-pill" aria-label="Open cart">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>Cart</span>
+          <span id="cart-count" class="cart-badge" hidden>0</span>
+        </button>
+        <button type="button" id="theme-toggle" class="btn-icon" aria-label="Toggle theme">
+          <svg id="icon-sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+          <svg id="icon-moon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="app"></main>
+
+  <footer id="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <div class="brand">
+          <img src="assets/dky-logo.png" alt="" width="32" height="32" />
+          <span class="brand-text">DKY <small>JEWELRY</small></span>
+        </div>
+        <p class="muted small">Real gold. Real value.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#/shop">Shop</a>
+        <a href="#/sell-gold">Sell Your Gold</a>
+      </div>
+      <p class="muted xsmall">© <span id="year"></span> DKY Jewelry. Prices indicative — confirmed via WhatsApp.</p>
+    </div>
+  </footer>
+
+  <!-- Cart drawer -->
+  <div id="cart-overlay" class="overlay" hidden></div>
+  <aside id="cart-drawer" class="drawer" hidden aria-hidden="true">
+    <header class="drawer-head">
+      <h2>Your Selection</h2>
+      <button type="button" id="cart-close" class="btn-icon" aria-label="Close cart">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </header>
+    <div id="cart-body" class="drawer-body"></div>
+    <footer id="cart-footer" class="drawer-foot" hidden></footer>
+  </aside>
+
+  <script src="config.js"></script>
+  <script src="products.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
