@@ -12,6 +12,11 @@ window.DKYCart = (function() {
     }
     return product[field];
   }
+  
+  function getCurrentLang() {
+    const i18n = window.DKYI18n;
+    return i18n ? i18n.getLang() : 'es';
+  }
 
   function notifyListeners() {
     listeners.forEach(fn => fn(cart));
@@ -157,77 +162,73 @@ window.DKYCart = (function() {
     const i18n = window.DKYI18n;
     const lang = i18n ? i18n.getLang() : "es";
     const cfg = window.DKY_CONFIG;
+    const lines = [];
     
     if (lang === "es") {
-      const lines = [
-        "¡Hola " + cfg.BUSINESS_NAME + "! Me gustaría consultar sobre las siguientes piezas:",
-        "",
-        ...cart.map((i, idx) => {
-          let priceText = "";
-          let totalText = "";
-          
-          if (i.product.priceType === "fixed") {
-            priceText = fmtMoney(i.product.priceUsd);
-            totalText = fmtMoney(i.product.priceUsd * i.qty);
-          } else if (i.product.priceType === "range") {
-            priceText = fmtMoney(i.product.priceMinUsd) + " – " + fmtMoney(i.product.priceMaxUsd);
-            const minTotal = i.product.priceMinUsd * i.qty;
-            const maxTotal = i.product.priceMaxUsd * i.qty;
-            totalText = fmtMoney(minTotal) + " – " + fmtMoney(maxTotal);
-          } else {
-            priceText = "por consultar";
-            totalText = "por consultar";
-          }
-          
-          const name = getProductText(i.product, 'name', lang);
-          return (idx + 1) + ". " + name + " (" + i.product.karat + "k, " + i.product.weightGrams + "g) — cantidad " + i.qty +
-            " — " + priceText + " (total aprox: " + totalText + ")";
-        }),
-        "",
-        "Total general estimado: " + cartTotalDisplay(),
-        "",
-        "¿Podrían confirmar disponibilidad y precio final?",
-      ];
-      return lines.join("\n");
-      
+      lines.push("¡Hola " + cfg.BUSINESS_NAME + "! Me gustaría consultar sobre las siguientes piezas:");
+      lines.push("");
+      cart.forEach((i, idx) => {
+        let priceText = "";
+        let totalText = "";
+        
+        if (i.product.priceType === "fixed") {
+          priceText = fmtMoney(i.product.priceUsd);
+          totalText = fmtMoney(i.product.priceUsd * i.qty);
+        } else if (i.product.priceType === "range") {
+          priceText = fmtMoney(i.product.priceMinUsd) + " – " + fmtMoney(i.product.priceMaxUsd);
+          const minTotal = i.product.priceMinUsd * i.qty;
+          const maxTotal = i.product.priceMaxUsd * i.qty;
+          totalText = fmtMoney(minTotal) + " – " + fmtMoney(maxTotal);
+        } else {
+          priceText = "por consultar";
+          totalText = "por consultar";
+        }
+        
+        const name = getProductText(i.product, 'name', lang);
+        lines.push((idx + 1) + ". " + name + " (" + i.product.karat + "k, " + i.product.weightGrams + "g) — cantidad " + i.qty +
+          " — " + priceText + " (total aprox: " + totalText + ")");
+      });
+      lines.push("");
+      lines.push("Total general estimado: " + cartTotalDisplay());
+      lines.push("");
+      lines.push("¿Podrían confirmar disponibilidad y precio final?");
     } else {
-      const lines = [
-        "Hi " + cfg.BUSINESS_NAME + "! I'd like to inquire about the following pieces:",
-        "",
-        ...cart.map((i, idx) => {
-          let priceText = "";
-          let totalText = "";
-          
-          if (i.product.priceType === "fixed") {
-            priceText = fmtMoney(i.product.priceUsd);
-            totalText = fmtMoney(i.product.priceUsd * i.qty);
-          } else if (i.product.priceType === "range") {
-            priceText = fmtMoney(i.product.priceMinUsd) + " – " + fmtMoney(i.product.priceMaxUsd);
-            const minTotal = i.product.priceMinUsd * i.qty;
-            const maxTotal = i.product.priceMaxUsd * i.qty;
-            totalText = fmtMoney(minTotal) + " – " + fmtMoney(maxTotal);
-          } else {
-            priceText = "inquire";
-            totalText = "inquire";
-          }
-          
-          const name = getProductText(i.product, 'name', lang);
-          return (idx + 1) + ". " + name + " (" + i.product.karat + "k, " + i.product.weightGrams + "g) — qty " + i.qty +
-            " — " + priceText + " (approx total: " + totalText + ")";
-        }),
-        "",
-        "Overall estimated total: " + cartTotalDisplay(),
-        "",
-        "Could you confirm availability and final price?",
-      ];
-      return lines.join("\n");
+      lines.push("Hi " + cfg.BUSINESS_NAME + "! I'd like to inquire about the following pieces:");
+      lines.push("");
+      cart.forEach((i, idx) => {
+        let priceText = "";
+        let totalText = "";
+        
+        if (i.product.priceType === "fixed") {
+          priceText = fmtMoney(i.product.priceUsd);
+          totalText = fmtMoney(i.product.priceUsd * i.qty);
+        } else if (i.product.priceType === "range") {
+          priceText = fmtMoney(i.product.priceMinUsd) + " – " + fmtMoney(i.product.priceMaxUsd);
+          const minTotal = i.product.priceMinUsd * i.qty;
+          const maxTotal = i.product.priceMaxUsd * i.qty;
+          totalText = fmtMoney(minTotal) + " – " + fmtMoney(maxTotal);
+        } else {
+          priceText = "inquire";
+          totalText = "inquire";
+        }
+        
+        const name = getProductText(i.product, 'name', lang);
+        lines.push((idx + 1) + ". " + name + " (" + i.product.karat + "k, " + i.product.weightGrams + "g) — qty " + i.qty +
+          " — " + priceText + " (approx total: " + totalText + ")");
+      });
+      lines.push("");
+      lines.push("Overall estimated total: " + cartTotalDisplay());
+      lines.push("");
+      lines.push("Could you confirm availability and final price?");
     }
+    return lines.join("\n");
   }
   
   function renderCartDrawer() {
     const body = document.getElementById("cart-body");
     const foot = document.getElementById("cart-footer");
     const i18n = window.DKYI18n;
+    const lang = getCurrentLang();
     if (!body || !foot) return;
     
     if (cart.length === 0) {
@@ -236,13 +237,15 @@ window.DKYCart = (function() {
       return;
     }
     
-    body.innerHTML = cart.map(i => `
+    body.innerHTML = cart.map(i => {
+      const productName = getProductText(i.product, 'name', lang);
+      return `
       <div class="cart-item">
-        <img src="${escape(i.product.image)}" alt="${escape(i.product.name)}" />
+        <img src="${escape(i.product.image)}" alt="${escape(productName)}" />
         <div class="info">
           <div class="info-top">
             <div>
-              <div class="name">${escape(i.product.name)}</div>
+              <div class="name">${escape(productName)}</div>
               <div class="meta">${i.product.karat}k · ${i.product.weightGrams}g</div>
               ${i.product.priceType !== "fixed" ? `<div class="meta" style="color: var(--gold-bright); font-size: 10px;">${i.product.priceType === "range" ? (i18n ? i18n.t("estimated_price") : "Estimated") : (i18n ? i18n.t("check_price") : "Check")}</div>` : ''}
             </div>
@@ -268,8 +271,8 @@ window.DKYCart = (function() {
             })()}</span>
           </div>
         </div>
-      </div>
-    `).join("");
+      </div>`;
+    }).join("");
     
     foot.hidden = false;
     foot.innerHTML = `
@@ -306,7 +309,9 @@ window.DKYCart = (function() {
   
   function init() {
     loadCart();
-    
+    renderCartBadge();
+    renderCartDrawer();
+
     const cartBtn = document.getElementById("cart-btn");
     const cartClose = document.getElementById("cart-close");
     const cartOverlay = document.getElementById("cart-overlay");
@@ -315,7 +320,10 @@ window.DKYCart = (function() {
     if (cartClose) cartClose.addEventListener("click", closeCart);
     if (cartOverlay) cartOverlay.addEventListener("click", closeCart);
     
-    window.addEventListener('langchange', () => renderCartDrawer());
+    window.addEventListener('langchange', () => {
+      renderCartDrawer();
+      renderCartBadge();
+    });
   }
   
   return { init, cartAdd, getCart, onCartChange, canAddToCart, cartTotalDisplay };

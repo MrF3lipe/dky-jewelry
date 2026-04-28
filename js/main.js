@@ -1,12 +1,15 @@
-
 (function() {
   "use strict";
 
   function init() {
+
+    
     if (window.DKYTheme) window.DKYTheme.init();
     
     if (window.DKYI18n) window.DKYI18n.init();
     
+    if (window.DKYProducts) window.DKYProducts.init();
+
     if (window.DKYSpot) window.DKYSpot.init();
     
     if (window.DKYCart) window.DKYCart.init();

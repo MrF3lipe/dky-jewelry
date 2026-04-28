@@ -65,7 +65,12 @@ window.DKYI18n = (function() {
       change: "Cambio",
       source: "Fuente",
       updated: "Actualizado",
-      last_hour: "Última hora · Pasa el cursor para ver detalles"
+      last_hour: "Última hora · Pasa el cursor para ver detalles",
+      cat_all: "Todos",
+      cat_necklaces: "Collares",
+      cat_rings: "Anillos",
+      cat_earrings: "Aretes",
+      cat_bracelets: "Pulseras"
     },
     en: {
       nav_shop: "Shop",
@@ -133,7 +138,12 @@ window.DKYI18n = (function() {
       change: "Change",
       source: "Source",
       updated: "Updated",
-      last_hour: "Last hour · Hover for details"
+      last_hour: "Last hour · Hover for details",
+      cat_all: "All",
+      cat_necklaces: "Necklaces",
+      cat_rings: "Rings",
+      cat_earrings: "Earrings",
+      cat_bracelets: "Bracelets"
     }
   };
   
