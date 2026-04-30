@@ -97,23 +97,17 @@ window.DKYCart = (function() {
   function cartSetQty(id, qty) {
     if (qty <= 0) cart = cart.filter(i => i.product.id !== id);
     else cart = cart.map(i => i.product.id === id ? { ...i, qty } : i);
-    saveCart();
-    renderCartBadge();
-    renderCartDrawer();
+    saveCart();  // saveCart ya llama a renderCartBadge y renderCartDrawer
   }
   
   function cartRemove(id) { 
     cart = cart.filter(i => i.product.id !== id); 
-    saveCart(); 
-    renderCartBadge();
-    renderCartDrawer();
+    saveCart();  // idem
   }
   
   function cartClear() { 
     cart = []; 
-    saveCart(); 
-    renderCartBadge();
-    renderCartDrawer();
+    saveCart();  // idem
   }
   
   function getCart() {
@@ -292,24 +286,37 @@ window.DKYCart = (function() {
       <button type="button" class="clear" id="cart-clear">${i18n ? i18n.t("clear_selection") : "Clear"}</button>
     `;
     
-    body.querySelectorAll("[data-remove]").forEach(btn => {
-      btn.addEventListener("click", () => cartRemove(btn.dataset.remove));
-    });
-    body.querySelectorAll("[data-inc]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const item = cart.find(i => i.product.id === btn.dataset.inc);
-        if (item) cartSetQty(item.product.id, item.qty + 1);
+    // --- Delegación de eventos (en lugar de enganchar cada botón individualmente) ---
+    // Si ya pusimos el listener delegado, no lo volvemos a poner.
+    if (!body._delegated) {
+      body._delegated = true;
+      body.addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        
+        // Botón eliminar
+        if (btn.hasAttribute('data-remove')) {
+          cartRemove(btn.dataset.remove);
+        }
+        // Botón incrementar
+        else if (btn.hasAttribute('data-inc')) {
+          const item = cart.find(i => i.product.id === btn.dataset.inc);
+          if (item) cartSetQty(item.product.id, item.qty + 1);
+        }
+        // Botón decrementar
+        else if (btn.hasAttribute('data-dec')) {
+          const item = cart.find(i => i.product.id === btn.dataset.dec);
+          if (item) cartSetQty(item.product.id, item.qty - 1);
+        }
       });
-    });
-    body.querySelectorAll("[data-dec]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const item = cart.find(i => i.product.id === btn.dataset.dec);
-        if (item) cartSetQty(item.product.id, item.qty - 1);
-      });
-    });
+    }
     
+    // Botón "Vaciar selección" (se recrea cada vez, pero usamos un listener único)
     const clearBtn = document.getElementById("cart-clear");
-    if (clearBtn) clearBtn.addEventListener("click", cartClear);
+    if (clearBtn && !clearBtn._delegated) {
+      clearBtn._delegated = true;
+      clearBtn.addEventListener("click", cartClear);
+    }
   }
   
   function init() {
