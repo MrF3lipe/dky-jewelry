@@ -97,17 +97,17 @@ window.DKYCart = (function() {
   function cartSetQty(id, qty) {
     if (qty <= 0) cart = cart.filter(i => i.product.id !== id);
     else cart = cart.map(i => i.product.id === id ? { ...i, qty } : i);
-    saveCart();  // saveCart ya llama a renderCartBadge y renderCartDrawer
+    saveCart();
   }
   
   function cartRemove(id) { 
     cart = cart.filter(i => i.product.id !== id); 
-    saveCart();  // idem
+    saveCart();
   }
   
   function cartClear() { 
     cart = []; 
-    saveCart();  // idem
+    saveCart();
   }
   
   function getCart() {
@@ -121,7 +121,7 @@ window.DKYCart = (function() {
     if (c > 0) { 
       badge.hidden = false; 
       badge.textContent = c; 
-    } else { 
+    } else {
       badge.hidden = true; 
     }
   }
@@ -137,6 +137,7 @@ window.DKYCart = (function() {
   }
   
   function closeCart() {
+    saveCart()
     const overlay = document.getElementById("cart-overlay");
     const drawer = document.getElementById("cart-drawer");
     if (!overlay || !drawer) return;
@@ -311,11 +312,13 @@ window.DKYCart = (function() {
       });
     }
     
-    // Botón "Vaciar selección" (se recrea cada vez, pero usamos un listener único)
-    const clearBtn = document.getElementById("cart-clear");
-    if (clearBtn && !clearBtn._delegated) {
-      clearBtn._delegated = true;
-      clearBtn.addEventListener("click", cartClear);
+    if (!foot._delegated) {
+      foot._delegated = true;
+      foot.addEventListener('click', (e) => {
+        if (e.target.id === 'cart-clear') {
+          cartClear();
+        }
+      });
     }
   }
   
