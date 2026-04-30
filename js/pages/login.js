@@ -28,7 +28,8 @@ window.DKYLogin = (function() {
       if (error) {
         document.getElementById("error-msg").textContent = error.message;
       } else {
-        window.location.hash = "#/admin"; // redirige al panel
+        window.history.pushState(null, "", "/admin");
+        window.DKYRouter.navigate();
       }
     });
     return () => {};

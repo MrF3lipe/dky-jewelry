@@ -98,16 +98,22 @@ window.DKYCart = (function() {
     if (qty <= 0) cart = cart.filter(i => i.product.id !== id);
     else cart = cart.map(i => i.product.id === id ? { ...i, qty } : i);
     saveCart();
+    renderCartBadge();
+    renderCartDrawer();
   }
   
   function cartRemove(id) { 
     cart = cart.filter(i => i.product.id !== id); 
     saveCart(); 
+    renderCartBadge();
+    renderCartDrawer();
   }
   
   function cartClear() { 
     cart = []; 
     saveCart(); 
+    renderCartBadge();
+    renderCartDrawer();
   }
   
   function getCart() {

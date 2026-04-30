@@ -12,12 +12,16 @@ window.DKYRouter = (function() {
   
   function renderPage(pageFn) {
     disposeCurrentPage();
-    currentPageDispose = pageFn();
+    if (pageFn) {
+      currentPageDispose = pageFn();
+    }
   }
   
   function navigate() {
-    const hash = window.location.hash.replace(/^#/, "") || "/";
-    const parts = hash.split("/").filter(Boolean);
+    const path = window.location.pathname || "/";
+    const parts = path.split("/").filter(Boolean);
+    
+    console.log('Router: navegando a', path, 'parts:', parts);
     
     let pageFn;
     
@@ -37,25 +41,50 @@ window.DKYRouter = (function() {
       pageFn = window.DKYNotFound ? () => window.DKYNotFound.render() : null;
     }
     
-    if (pageFn) {
-      renderPage(pageFn);
-    } else {
-      console.error("Page module not loaded");
-    }
+    renderPage(pageFn);
     
+    // Actualizar nav activo
     document.querySelectorAll("#main-nav a").forEach(a => {
-      const route = a.dataset.route;
-      a.classList.toggle("active", route === ("/" + (parts[0] || "")));
+      const href = a.getAttribute("href");
+      const route = href ? href.split("/").filter(Boolean)[0] : "";
+      a.classList.toggle("active", route === parts[0] || (route === undefined && parts.length === 0));
     });
     
     window.scrollTo({ top: 0 });
   }
   
   function init() {
-    window.addEventListener("hashchange", navigate);
+    // Navegación inicial
     navigate();
     
+    // Botones atrás/adelante del navegador
+    window.addEventListener("popstate", navigate);
+    
+    // Cambio de idioma
     window.addEventListener('langchange', () => navigate());
+    
+    // Interceptar TODOS los clicks en enlaces internos
+    document.addEventListener("click", (e) => {
+      const link = e.target.closest("a");
+      if (!link) return;
+      
+      const href = link.getAttribute("href");
+      if (!href) return;
+      
+      // Ignorar enlaces externos, anclas, WhatsApp, etc.
+      if (href.startsWith("http") || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:") || link.hasAttribute("data-wa") || link.target === "_blank") {
+        return;
+      }
+      
+      // Verificar que sea del mismo dominio
+      const url = new URL(href, window.location.origin);
+      if (url.origin !== window.location.origin) return;
+      
+      // Prevenir navegación normal y usar history API
+      e.preventDefault();
+      window.history.pushState(null, "", href);
+      navigate();
+    });
   }
   
   return { init, navigate };

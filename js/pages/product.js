@@ -2,6 +2,15 @@ window.DKYProduct = (function() {
   let PRODUCTS = [];
   let currentProductId = null;
 
+
+  function ensureProducts() {
+    if (window.DKY_PRODUCTS && window.DKY_PRODUCTS.length) {
+      PRODUCTS = window.DKY_PRODUCTS;
+      return true;
+    }
+    return false;
+  }
+
   function getProductText(product, field, lang) {
     if (!product[field]) return "";
     if (typeof product[field] === 'object') {
@@ -75,7 +84,12 @@ window.DKYProduct = (function() {
     const t = (key) => i18n ? i18n.t(key) : key;
     const currentLang = i18n ? i18n.getLang() : 'es';
 
-    const p = PRODUCTS.find(x => x.id === id);
+    // Obtener el producto desde el array más actualizado
+    const products = (window.DKY_PRODUCTS && window.DKY_PRODUCTS.length) 
+                      ? window.DKY_PRODUCTS 
+                      : PRODUCTS;
+    const p = products.find(x => x.id === id);
+    
     if (!p) {
       if (window.DKYNotFound) window.DKYNotFound.render();
       return;
@@ -94,7 +108,7 @@ window.DKYProduct = (function() {
     const related = PRODUCTS.filter(x => x.id !== id).slice(0, 3);
 
     document.getElementById("app").innerHTML = `
-      <section class="product-page"><div class="container"><a class="back-link" href="#/shop">${t("back_to_shop")}</a>
+      <section class="product-page"><div class="container"><a class="back-link" href="/shop">${t("back_to_shop")}</a>
       <div class="pp-grid"><div class="pp-img-frame"><img src="${p.image}" /></div><div class="pp-info">
         <p class="pp-cat">${category}</p><h1>${escape(name)}</h1><p class="pp-desc">${escape(description)}</p>
         <div class="pp-price-row"><span class="pp-price gold-text">${getDisplayPrice(p)}</span><span class="pp-meta">${p.karat}k · ${p.weightGrams}g</span></div>
@@ -103,7 +117,7 @@ window.DKYProduct = (function() {
       </div></div>
       <section class="related"><h2>${t("you_may_also_like")}</h2><div class="related-grid">${related.map(r => {
         const rName = getProductText(r, 'name', currentLang);
-        return `<a class="product-card" href="#/shop/${r.id}"><div class="product-img"><img src="${r.image}" /></div><div class="product-body"><p class="product-name">${escape(rName)}</p><p class="product-price">${getDisplayPrice(r)}</p></div></a>`;
+        return `<a class="product-card" href="/shop/${r.id}"><div class="product-img"><img src="${r.image}" /></div><div class="product-body"><p class="product-name">${escape(rName)}</p><p class="product-price">${getDisplayPrice(r)}</p></div></a>`;
       }).join("")}</div></section>
       </div></section>`;
 
@@ -115,9 +129,11 @@ window.DKYProduct = (function() {
   function render(id) {
     currentProductId = id;
 
-    if (PRODUCTS.length) {
+    // Intenta usar los productos que ya están en memoria global
+    if (ensureProducts()) {
       renderContent(id);
     } else {
+      // Si aún no hay productos, espera el evento
       document.addEventListener('productsLoaded', function onLoad(e) {
         PRODUCTS = e.detail;
         if (currentProductId === id) {
@@ -129,12 +145,15 @@ window.DKYProduct = (function() {
     return () => {};
   }
 
+  ensureProducts();
+
   if (window.DKY_PRODUCTS && window.DKY_PRODUCTS.length) {
     PRODUCTS = window.DKY_PRODUCTS;
   }
 
   window.addEventListener('langchange', function() {
     if (currentProductId && window.location.hash.includes('/shop/')) {
+      ensureProducts();
       renderContent(currentProductId);
     }
   });

@@ -22,8 +22,8 @@ window.DKYHome = (function() {
               <p class="lead">${t("hero_desc")}</p>
               <div class="spot-ticker">${spot ? spot.tickerHTML() : ''}</div>
               <div class="hero-cta">
-                <a href="#/shop" class="btn-primary">${t("enter_shop")}</a>
-                <a href="#/sell-gold" class="btn-secondary">${t("sell_gold")}</a>
+                <a href="/shop" class="btn-primary">${t("enter_shop")}</a>
+                <a href="/sell-gold" class="btn-secondary">${t("sell_gold")}</a>
               </div>
             </div>
           </div>
@@ -58,11 +58,11 @@ window.DKYHome = (function() {
                 <h2>${t("showcase_title")}</h2>
                 <p class="muted" style="margin-top:12px;">${t("showcase_desc")}</p>
                 <div class="showcase-list">
-                  <a class="showcase-link" href="#/shop">
+                  <a class="showcase-link" href="/shop">
                     <span><strong>${t("shop_our_jewelry")}</strong><span class="sub">${t("shop_our_jewelry_sub")}</span></span>
                     <span style="color:var(--gold-bright);">↗</span>
                   </a>
-                  <a class="showcase-link" href="#/sell-gold">
+                  <a class="showcase-link" href="/sell-gold">
                     <span><strong>${t("sell_your_gold_showcase")}</strong><span class="sub">${t("sell_your_gold_sub")}</span></span>
                     <span style="color:var(--gold-bright);">↗</span>
                   </a>

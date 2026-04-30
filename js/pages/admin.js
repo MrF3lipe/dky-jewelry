@@ -9,9 +9,9 @@ window.DKYAdmin = (function() {
   function normalizeProduct(raw) {
     return {
       id: raw.id,
-      image: raw.img,                    // ✅ corregido
+      image: raw.img,                    
       karat: raw.karat,
-      weightGrams: raw.weight,           // ✅ corregido
+      weightGrams: raw.weight,           
       name: {
         es: raw.name_es?.trim() || "",
         en: raw.name_en?.trim() || ""
@@ -22,21 +22,25 @@ window.DKYAdmin = (function() {
         en: raw.description_en || ""
       },
       details: {
-        es: Array.isArray(raw.details_es)
-            ? raw.details_es
-            : (raw.details_es || "").split('\n').filter(l => l.trim()),
-        en: Array.isArray(raw.details_en)
-            ? raw.details_en
-            : (raw.details_en || "").split('\n').filter(l => l.trim())
+        es: typeof raw.details_es === 'string' 
+          ? raw.details_es 
+          : Array.isArray(raw.details_es) 
+            ? raw.details_es.join('\n') 
+            : '',
+        en: typeof raw.details_en === 'string' 
+          ? raw.details_en 
+          : Array.isArray(raw.details_en) 
+            ? raw.details_en.join('\n') 
+            : ''
       },
       shortDesc: {
-        es: raw.short_descr_es || "",     // ✅ corregido
-        en: raw.short_descr_en || ""      // ✅ corregido
+        es: raw.short_descr_es || "",     
+        en: raw.short_descr_en || ""      
       },
       priceType: raw.price_type,
-      priceUsd: raw.price || null,        // ✅ corregido
-      priceMinUsd: raw.minprice || null,  // ✅ corregido
-      priceMaxUsd: raw.maxprice || null,  // ✅ corregido
+      priceUsd: raw.price || null,        
+      priceMinUsd: raw.minprice || null,  
+      priceMaxUsd: raw.maxprice || null,  
     };
   }
 
@@ -138,7 +142,14 @@ window.DKYAdmin = (function() {
     app.innerHTML = `
       <div class="admin-container">
         <div class="admin-card">
-          <h1>${title}</h1>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h1 style="margin: 0;">${title}</h1>
+            <button type="button" id="close-form" class="btn-icon" style="width: 36px; height: 36px;" aria-label="Cerrar">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+              </svg>
+            </button>
+          </div>
           <form id="product-form" class="admin-form">
             <input type="hidden" id="prod-id" value="${product ? product.id : ''}" />
 
@@ -218,7 +229,8 @@ window.DKYAdmin = (function() {
               </div>
               <div class="field-half" id="price-range" style="display:${product && product.priceType === 'range' ? 'block' : 'none'}">
                 <label>Precio mínimo USD</label>
-                <input type="number" id="minprice" value="${product ? product.priceMinUsd || '' : ''}" step="0.01" />                <label>Precio máximo USD</label>
+                <input type="number" id="minprice" value="${product ? product.priceMinUsd || '' : ''}" step="0.01" />
+                <label>Precio máximo USD</label>
                 <input type="number" id="maxprice" value="${product ? product.priceMaxUsd || '' : ''}" step="0.01" />
               </div>
             </div>
@@ -242,6 +254,9 @@ window.DKYAdmin = (function() {
     document.getElementById("cancel-form").addEventListener("click", () => {
       renderPanel();
     });
+    document.getElementById("close-form").addEventListener("click", () => {
+      renderPanel();
+    });
 
     document.getElementById("product-form").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -253,8 +268,8 @@ window.DKYAdmin = (function() {
       category: document.getElementById("category").value,
       description_es: document.getElementById("description_es").value,
       description_en: document.getElementById("description_en").value,
-      details_es: document.getElementById("details_es").value.split('\n').filter(l => l.trim()),
-      details_en: document.getElementById("details_en").value.split('\n').filter(l => l.trim()),
+      details_es: document.getElementById("details_es").value,
+      details_en: document.getElementById("details_en").value,
       short_descr_es: document.getElementById("short_descr_es").value,
       short_descr_en: document.getElementById("short_descr_en").value,
       karat: parseInt(document.getElementById("karat").value),
@@ -321,7 +336,8 @@ window.DKYAdmin = (function() {
       document.getElementById("add-product").addEventListener("click", () => openForm(null));
       document.getElementById("logout-btn").addEventListener("click", async () => {
         await supabase.auth.signOut();
-        window.location.hash = "#/login";
+        window.history.pushState(null, "", "/login");
+        window.DKYRouter.navigate();
       });
 
       renderList();

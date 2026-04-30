@@ -23,8 +23,16 @@ window.DKYProducts = (function() {
         en: raw.description_en || ""
       },
       details: {
-        es: raw.details_es ? raw.details_es.split('\n').filter(l => l.trim()) : [],
-        en: raw.details_en ? raw.details_en.split('\n').filter(l => l.trim()) : []
+        es: typeof raw.details_es === 'string' 
+          ? raw.details_es 
+          : Array.isArray(raw.details_es) 
+            ? raw.details_es.join('\n') 
+            : '',
+        en: typeof raw.details_en === 'string' 
+          ? raw.details_en 
+          : Array.isArray(raw.details_en) 
+            ? raw.details_en.join('\n') 
+            : ''
       },
       shortDesc: {
         es: raw.short_descr_es || "",  // ← antes raw.short_desc_es
