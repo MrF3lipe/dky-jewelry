@@ -4,8 +4,7 @@
   <meta charset="utf-8">
   <title>Redirecting…</title>
   <script>
-    // Guarda la ruta actual y redirige al index
-    sessionStorage.setItem('redirect', location.pathname + location.search + location.hash);
+    sessionStorage.setItem('dky_restore_path', location.pathname + location.search + location.hash);
     location.replace('/');
   </script>
 </head>

@@ -6,15 +6,15 @@
   <title>DKY Jewelry</title>
   <base href="/">
   <script>
-  (function() {
-    const params = new URLSearchParams(location.search);
-    const redirect = params.get('dky_redirect');
-    if (redirect) {
-      history.replaceState(null, '', redirect);
-      window.__dkyRedirect = redirect;
-    }
-  })();
-</script>
+    (function() {
+      var restore = sessionStorage.getItem('dky_restore_path');
+      console.log(restore)
+      if (restore) {
+        sessionStorage.removeItem('dky_restore_path');
+        history.replaceState(null, '', restore);
+      }
+    })();
+  </script>
   <meta name="description" content="Compra joyas de oro fino de 14k a 22k y vende tu oro a tasas internacionales en vivo. Transparente, justo y rápido." />
   <link rel="icon" href="assets/dky-logo.png" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" />
