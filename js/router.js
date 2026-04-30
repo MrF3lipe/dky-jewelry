@@ -54,7 +54,11 @@ window.DKYRouter = (function() {
   }
   
   function init() {
-    // Navegación inicial
+    if (window.__dkyRedirect) {
+      const redirect = window.__dkyRedirect;
+      delete window.__dkyRedirect;
+      history.replaceState(null, '', redirect);
+    }
     navigate();
     
     // Botones atrás/adelante del navegador
