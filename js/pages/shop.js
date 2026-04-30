@@ -22,13 +22,8 @@ window.DKYShop = (function() {
     return "";
   }
 
-  function getCategoryId(product, lang) {
-    const cat = getProductText(product, 'category', lang).toLowerCase();
-    if (cat.includes("earring") || cat.includes("arete") || cat.includes("aro")) return "earrings";
-    if (cat.includes("ring") || cat.includes("anillo")) return "rings";
-    if (cat.includes("necklace") || cat.includes("collar")) return "necklaces";
-    if (cat.includes("bracelet") || cat.includes("pulsera")) return "bracelets";
-    return "other";
+  function getCategoryId(product) {
+    return product.category || "other";
   }
 
   function renderProducts(container) {
@@ -71,7 +66,7 @@ window.DKYShop = (function() {
       </div>
       <div class="products-grid">${filtered.map(p => {
         const name = getProductText(p, 'name', currentLang);
-        const category = getProductText(p, 'category', currentLang);
+        const category = t('cat_' + (p.category || 'other'));
         const shortDesc = getProductText(p, 'shortDesc', currentLang);
         const priceDisplay = p.priceType === "hidden" ? "" : getDisplayPrice(p);
 

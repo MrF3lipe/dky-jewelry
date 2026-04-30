@@ -1,27 +1,23 @@
 window.DKYProducts = (function() {
   "use strict";
   
-  const SUPABASE_URL = 'https://buoufbuqmyrtcumppaeq.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1b3VmYnVxbXlydGN1bXBwYWVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTkzOTYsImV4cCI6MjA5Mjg5NTM5Nn0.5CfnWvs_A6MmwPC8HrH0uXdss-cjQLZ1IRuBIiHuXsY';
+
+  const SUPABASE_URL = window.DKY_CONFIG.SUPABASE_URL;
+  const SUPABASE_ANON_KEY = window.DKY_CONFIG.SUPABASE_ANON_KEY;
   
   let products = [];
   
-  // Función para normalizar un producto al formato que esperan shop.js, product.js, cart.js
   function normalizeProduct(raw) {
     return {
       id: raw.id,
-      image: raw.image,
+      image: raw.img,                  // ← antes raw.image
       karat: raw.karat,
-      weightGrams: raw.weight_grams,
-      // Campos multilingüe
+      weightGrams: raw.weight,         // ← antes raw.weight_grams
       name: {
         es: raw.name_es?.trim() || "",
         en: raw.name_en?.trim() || ""
       },
-      category: {
-        es: raw.category_es || "",
-        en: raw.category_en || ""
-      },
+      category: raw.category || "other",
       description: {
         es: raw.description_es || "",
         en: raw.description_en || ""
@@ -31,14 +27,13 @@ window.DKYProducts = (function() {
         en: raw.details_en ? raw.details_en.split('\n').filter(l => l.trim()) : []
       },
       shortDesc: {
-        es: raw.short_desc_es || "",
-        en: raw.short_desc_en || ""
+        es: raw.short_descr_es || "",  // ← antes raw.short_desc_es
+        en: raw.short_descr_en || ""   // ← antes raw.short_desc_en
       },
-      // Precio
-      priceType: raw.price_type, // "fixed", "range", "hidden"
-      priceUsd: raw.price_usd || null,
-      priceMinUsd: raw.pricemin || null,
-      priceMaxUsd: raw.pricemax || null,
+      priceType: raw.price_type,
+      priceUsd: raw.price || null,     // ← antes raw.price_usd
+      priceMinUsd: raw.minprice || null,// ← antes raw.pricemin
+      priceMaxUsd: raw.maxprice || null,// ← antes raw.pricemax
     };
   }
   
@@ -52,12 +47,9 @@ window.DKYProducts = (function() {
       });
       
       const rawProducts = await response.json();
-      // Normalizar cada producto
       products = rawProducts.map(normalizeProduct);
       window.DKY_PRODUCTS = products;
-      console.log('Productos normalizados:', products);
       
-      // Disparar evento cuando los productos estén listos
       document.dispatchEvent(new CustomEvent('productsLoaded', { detail: products }));
       
     } catch (err) {

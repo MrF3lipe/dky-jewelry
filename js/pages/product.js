@@ -82,7 +82,7 @@ window.DKYProduct = (function() {
     }
 
     const name = getProductText(p, 'name', currentLang);
-    const category = getProductText(p, 'category', currentLang);
+    const category = t('cat_' + (p.category || 'other'));
     const description = getProductText(p, 'description', currentLang);
     const rawDetails = getProductText(p, 'details', currentLang);
 

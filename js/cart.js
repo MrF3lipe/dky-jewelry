@@ -91,7 +91,6 @@ window.DKYCart = (function() {
     if (found) found.qty++;
     else cart.push({ product, qty: 1 });
     saveCart();
-    openCart();
     return true;
   }
   
