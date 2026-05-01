@@ -8,7 +8,6 @@
   <script>
     (function() {
       var restore = sessionStorage.getItem('dky_restore_path');
-      console.log(restore)
       if (restore) {
         sessionStorage.removeItem('dky_restore_path');
         history.replaceState(null, '', restore);

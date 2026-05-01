@@ -20,8 +20,7 @@ window.DKYRouter = (function() {
   function navigate() {
     const path = window.location.pathname || "/";
     const parts = path.split("/").filter(Boolean);
-    
-    console.log('Router: navegando a', path, 'parts:', parts);
+  
     
     let pageFn;
     

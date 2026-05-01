@@ -46,23 +46,19 @@ window.DKYProducts = (function() {
   }
   
   async function fetchProducts() {
-    try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/Productos?select=*`, {
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-        }
-      });
-      
-      const rawProducts = await response.json();
-      products = rawProducts.map(normalizeProduct);
-      window.DKY_PRODUCTS = products;
-      
-      document.dispatchEvent(new CustomEvent('productsLoaded', { detail: products }));
-      
-    } catch (err) {
-      console.error('Error cargando productos:', err);
-    }
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/Productos?select=*`, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+    
+    const rawProducts = await response.json();
+    products = rawProducts.map(normalizeProduct);
+    window.DKY_PRODUCTS = products;
+    
+    document.dispatchEvent(new CustomEvent('productsLoaded', { detail: products }));
+    
   }
   
   function getProducts() {

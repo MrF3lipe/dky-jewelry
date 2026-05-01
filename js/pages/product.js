@@ -160,13 +160,3 @@ window.DKYProduct = (function() {
 
   return { render };
 })();
-
-
-
-
-
-
-
-
-
-
