@@ -162,6 +162,7 @@ window.DKYSell = (function() {
     const pureGrams = weight * PURITY[karat];
     const goldValue = pureGrams * spotPrice;
     let minPct = 0.90, maxPct = 0.92;
+    maxPct -= (condition === "old" ? 0.01 : 0) + (form === "semi-solid" ? 0.01 : 0);
     const minPay = goldValue * minPct, maxPay = goldValue * maxPct;
     
     const payoutMin = document.getElementById("payout-min");
