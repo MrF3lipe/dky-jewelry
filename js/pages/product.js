@@ -93,7 +93,15 @@ window.DKYProduct = (function () {
     const p = products.find(x => x.id === id);
 
     const sameCategory = PRODUCTS.filter(x => x.category === p.category && x.id !== p.id);
-    const similarItems = sameCategory.slice(0, 6);
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+    const similarItems = shuffle(sameCategory).slice(0, 6);
 
     function renderSimilarProducts(items, lang) {
       if (!items.length) return '';
