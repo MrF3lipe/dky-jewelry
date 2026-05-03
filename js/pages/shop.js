@@ -65,17 +65,17 @@ window.DKYShop = (function() {
         `).join("")}
       </div>
       <div class="products-grid">${filtered.map(p => {
-        const name = getProductText(p, 'name', currentLang);
-        const category = t('cat_' + (p.category || 'other'));
-        const shortDesc = getProductText(p, 'shortDesc', currentLang);
-        const priceDisplay = p.priceType === "hidden" ? "" : getDisplayPrice(p);
-
         return `
           <div class="product-card">
-            <a href="/shop/${p.id}"><div class="product-img"><img src="${p.image}" /><span class="karat-tag">${p.karat}k</span></div>
-            <div class="product-body"><p class="product-cat">${category}</p><h3>${escape(name)}</h3><p class="product-desc">${escape(shortDesc)}</p>
-            <div class="product-row"><span class="product-price">${priceDisplay}</span><span class="product-view">${t("enter_shop")}</span></div></div></a>
-            ${(cart && cart.canAddToCart(p)) ? `<button class="add-btn ${justAdded === p.id ? "added" : ""}" data-add="${p.id}">${justAdded === p.id ? t("added") : t("add_to_cart")}</button>` : `<button class="whatsapp-inquiry" data-wa="${p.id}">${t("inquire_whatsapp")}</button>`}
+            <a href="/shop/${p.id}">
+              <div class="product-img">
+                <img src="${p.image}" />
+                <span class="karat-tag">${p.karat}k</span>
+              </div>
+            </a>
+            <button class="add-btn ${justAdded === p.id ? "added" : ""}" data-add="${p.id}">
+              ${justAdded === p.id ? t("added") : t("add_to_cart")}
+            </button>
           </div>`;
       }).join("")}</div>
     `;

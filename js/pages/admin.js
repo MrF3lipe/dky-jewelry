@@ -5,7 +5,7 @@ window.DKYAdmin = (function() {
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let products = [];
-  
+
   function normalizeProduct(raw) {
     return {
       id: raw.id,
@@ -44,7 +44,6 @@ window.DKYAdmin = (function() {
     };
   }
 
-  // Auth check
   async function checkAuth() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
@@ -54,7 +53,6 @@ window.DKYAdmin = (function() {
     return true;
   }
 
-  // Carga productos desde Supabase, almacena normalizados, NO renderiza
   async function fetchProducts() {
     const { data, error } = await supabase
       .from('Productos')
@@ -68,7 +66,6 @@ window.DKYAdmin = (function() {
     products = (data || []).map(normalizeProduct);
   }
 
-  // Renderiza la tabla de productos
   function renderList() {
     const list = document.getElementById("products-list");
     if (!list) return;
@@ -86,6 +83,7 @@ window.DKYAdmin = (function() {
       const name = p.name?.es || 'Sin nombre';
       const categoryDisplay = t('cat_' + (p.category || 'other'));
       const karat = p.karat || '?';
+      const weightStr = p.weightGrams > 0 ? p.weightGrams + 'g' : '';
       let priceDisplay = '';
       if (p.priceType === 'fixed') priceDisplay = `$${p.priceUsd}`;
       else if (p.priceType === 'range') priceDisplay = `$${p.priceMinUsd} – $${p.priceMaxUsd}`;
@@ -99,6 +97,7 @@ window.DKYAdmin = (function() {
             <div class="admin-meta">
               <span class="admin-meta-item">${categoryDisplay}</span>
               <span class="admin-meta-item">${karat}k</span>
+              ${weightStr ? `<span class="admin-meta-item">${weightStr}</span>` : ''}
               <span class="admin-meta-item admin-price">${priceDisplay}</span>
             </div>
           </div>
@@ -118,7 +117,6 @@ window.DKYAdmin = (function() {
     );
   }
 
-  // Eliminar producto
   async function deleteProduct(id) {
     if (!confirm("¿Eliminar definitivamente este producto?")) return;
     const { error } = await supabase
@@ -132,10 +130,12 @@ window.DKYAdmin = (function() {
     }
   }
 
-  // Función openForm COMPLETA con subida de imagen
   function openForm(id) {
     const product = id ? products.find(p => p.id == id) : null;
     const title = product ? "Editar producto" : "Nuevo producto";
+
+    const i18n = window.DKYI18n;
+    const t = (key) => i18n ? i18n.t(key) : key;
 
     const app = document.getElementById("app");
     app.innerHTML = `
@@ -156,7 +156,7 @@ window.DKYAdmin = (function() {
           <form id="product-form" class="admin-form-new">
             <input type="hidden" id="prod-id" value="${product ? product.id : ''}" />
 
-            <!-- Imagen – ocupa el ancho completo -->
+            <!-- Imagen -->
             <div class="form-section form-section-image">
               <label class="form-label-icon">📷 Imagen del producto</label>
               <div class="image-upload-area" id="image-upload-area">
@@ -193,11 +193,11 @@ window.DKYAdmin = (function() {
                 <div class="form-section">
                   <label class="form-label-icon" for="category">🏷️ Categoría</label>
                   <select id="category">
-                    <option value="necklaces" ${product?.category === 'necklaces' ? 'selected' : ''}>Collares</option>
-                    <option value="rings" ${product?.category === 'rings' ? 'selected' : ''}>Anillos</option>
-                    <option value="earrings" ${product?.category === 'earrings' ? 'selected' : ''}>Aretes</option>
-                    <option value="bracelets" ${product?.category === 'bracelets' ? 'selected' : ''}>Pulseras</option>
-                    <option value="other" ${product?.category === 'other' ? 'selected' : ''}>Otro</option>
+                    <option value="necklaces" ${product?.category === 'necklaces' ? 'selected' : ''}>${t('cat_necklaces') || 'Collares'}</option>
+                    <option value="rings" ${product?.category === 'rings' ? 'selected' : ''}>${t('cat_rings') || 'Anillos'}</option>
+                    <option value="earrings" ${product?.category === 'earrings' ? 'selected' : ''}>${t('cat_earrings') || 'Aretes'}</option>
+                    <option value="bracelets" ${product?.category === 'bracelets' ? 'selected' : ''}>${t('cat_bracelets') || 'Pulseras'}</option>
+                    <option value="other" ${product?.category === 'other' ? 'selected' : ''}>${t('cat_other') || 'Otro'}</option>
                   </select>
                 </div>
                 <div class="form-row-2col-inner">
@@ -269,7 +269,7 @@ window.DKYAdmin = (function() {
       </div>
     `;
 
-    // --- Lógica de subida de imagen (sin cambios) ---
+    // Lógica de subida de imagen
     const fileInput = document.getElementById("image-file");
     const previewImg = document.getElementById("image-preview");
     const placeholder = document.getElementById("upload-placeholder");
@@ -403,7 +403,6 @@ window.DKYAdmin = (function() {
     });
   }
 
-  // Función auxiliar para recargar productos y actualizar el panel y la tienda global
   async function refreshAndRender() {
     await fetchProducts();
     window.DKY_PRODUCTS = products;
@@ -411,7 +410,6 @@ window.DKYAdmin = (function() {
     renderPanel();
   }
 
-  // Panel principal
   function renderPanel() {
     const app = document.getElementById("app");
     app.innerHTML = `
@@ -442,7 +440,6 @@ window.DKYAdmin = (function() {
     renderList();
   }
 
-  // Entry point
   async function render() {
     const ok = await checkAuth();
     if (ok) {

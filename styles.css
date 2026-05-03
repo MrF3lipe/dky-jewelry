@@ -1092,3 +1092,83 @@ select option {
     justify-content: center;
   }
 }
+
+/* --- Productos similares en detalle de producto --- */
+.similar-products {
+  margin-top: 2rem;
+}
+.similar-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--foreground);
+  font-family: var(--font-display);
+}
+.similar-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+@media (min-width: 480px) {
+  .similar-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.similar-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--card) 40%, transparent);
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.similar-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+.similar-img {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--background);
+}
+.similar-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s;
+}
+.similar-card:hover .similar-img img {
+  transform: scale(1.05);
+}
+.small-karat {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: color-mix(in oklab, var(--background) 85%, transparent);
+  backdrop-filter: blur(4px);
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gold-bright);
+  letter-spacing: 0.05em;
+}
+.similar-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.5rem 0.5rem 0;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.similar-price {
+  font-size: 0.75rem;
+  color: var(--gold-bright);
+  font-family: var(--font-display);
+  font-weight: 600;
+  padding: 0.25rem 0.5rem 0.5rem;
+}

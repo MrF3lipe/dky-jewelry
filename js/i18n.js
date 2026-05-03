@@ -1,6 +1,7 @@
 window.DKYI18n = (function() {
   const translations = {
     es: {
+      similar_products: "Productos similares",
       nav_shop: "Tienda",
       nav_sell: "Vende tu Oro",
       cart_btn: "Carrito",
@@ -73,6 +74,7 @@ window.DKYI18n = (function() {
       cat_bracelets: "Pulseras"
     },
     en: {
+      similar_products: "Similar Products",
       nav_shop: "Shop",
       nav_sell: "Sell Your Gold",
       cart_btn: "Cart",

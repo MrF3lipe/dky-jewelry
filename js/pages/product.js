@@ -1,4 +1,4 @@
-window.DKYProduct = (function() {
+window.DKYProduct = (function () {
   let PRODUCTS = [];
   let currentProductId = null;
 
@@ -40,10 +40,10 @@ window.DKYProduct = (function() {
     // Si es un string
     if (typeof d === 'string') {
       let trimmed = d.trim();
-      
+
       // Intenta parsear como JSON (con comillas dobles o simples)
-      if ((trimmed.startsWith('[') && trimmed.endsWith(']')) || 
-          (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+      if ((trimmed.startsWith('[') && trimmed.endsWith(']')) ||
+        (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
         // Reemplazar comillas simples por dobles para que JSON.parse funcione
         let jsonStr = trimmed.replace(/'/g, '"');
         // Escapar comillas dobles internas si las hubiera (caso raro)
@@ -52,31 +52,33 @@ window.DKYProduct = (function() {
           if (Array.isArray(parsed)) {
             return parsed.filter(item => typeof item === 'string').map(s => s.trim());
           }
-        } catch(e) {
+        } catch (e) {
           // Si falla, seguir con otros métodos
         }
       }
-      
+
       // Dividir por saltos de línea
       let lines = d.split(/\r?\n/).filter(line => line.trim());
       if (lines.length > 0) return lines;
-      
+
       // Si tiene comas y no saltos de línea, dividir por coma
       if (d.includes(',')) {
         return d.split(',').map(s => s.trim()).filter(s => s);
       }
-      
+
       // Si es una sola línea, devolver como un solo elemento
       return [d.trim()];
     }
-    
+
     // Si es un objeto, convertir sus valores a array
     if (typeof d === 'object') {
       return Object.values(d).filter(v => typeof v === 'string');
     }
-    
+
     return [];
   }
+
+
 
   function renderContent(id) {
     const i18n = window.DKYI18n;
@@ -85,11 +87,36 @@ window.DKYProduct = (function() {
     const currentLang = i18n ? i18n.getLang() : 'es';
 
     // Obtener el producto desde el array más actualizado
-    const products = (window.DKY_PRODUCTS && window.DKY_PRODUCTS.length) 
-                      ? window.DKY_PRODUCTS 
-                      : PRODUCTS;
+    const products = (window.DKY_PRODUCTS && window.DKY_PRODUCTS.length)
+      ? window.DKY_PRODUCTS
+      : PRODUCTS;
     const p = products.find(x => x.id === id);
-    
+
+    const sameCategory = PRODUCTS.filter(x => x.category === p.category && x.id !== p.id);
+    const similarItems = sameCategory.slice(0, 6);
+
+    function renderSimilarProducts(items, lang) {
+      if (!items.length) return '';
+      const i18n = window.DKYI18n;
+      const t = (key) => i18n ? i18n.t(key) : key;
+      let html = `<div class="similar-products">
+        <h4 class="similar-title">${t("similar_products") || "Productos similares"}</h4>
+        <div class="similar-grid">`;
+      items.forEach(sim => {
+        const simName = getProductText(sim, 'name', lang);
+        html += `
+          <a href="/shop/${sim.id}" class="similar-card">
+            <div class="similar-img">
+              <img src="${sim.image}" alt="${escape(simName)}" />
+              <span class="karat-tag small-karat">${sim.karat}k</span>
+            </div>
+            <span class="similar-price">${getDisplayPrice(sim)}</span>
+          </a>`;
+      });
+      html += `</div></div>`;
+      return html;
+    }
+
     if (!p) {
       if (window.DKYNotFound) window.DKYNotFound.render();
       return;
@@ -109,17 +136,43 @@ window.DKYProduct = (function() {
 
     document.getElementById("app").innerHTML = `
       <section class="product-page"><div class="container"><a class="back-link" href="/shop">${t("back_to_shop")}</a>
-      <div class="pp-grid"><div class="pp-img-frame"><img src="${p.image}" /></div><div class="pp-info">
-        <p class="pp-cat">${category}</p><h1>${escape(name)}</h1><p class="pp-desc">${escape(description)}</p>
-        <div class="pp-price-row"><span class="pp-price gold-text">${getDisplayPrice(p)}</span><span class="pp-meta">${p.karat}k · ${p.weightGrams}g</span></div>
-        ${(cart && cart.canAddToCart(p)) ? `<button class="btn-primary pp-add" id="pp-add">${t("add_to_cart")}</button>` : `<a href="https://wa.me/${window.DKY_CONFIG?.WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola! Me interesa " + name)}" class="btn-primary pp-add">${t("inquire_whatsapp")}</a>`}
-        <div class="card details-card"><h2>${t("details")}</h2>${detailsHtml}</div>
-      </div></div>
-      <section class="related"><h2>${t("you_may_also_like")}</h2><div class="related-grid">${related.map(r => {
-        const rName = getProductText(r, 'name', currentLang);
-        return `<a class="product-card" href="/shop/${r.id}"><div class="product-img"><img src="${r.image}" /></div><div class="product-body"><p class="product-name">${escape(rName)}</p><p class="product-price">${getDisplayPrice(r)}</p></div></a>`;
-      }).join("")}</div></section>
-      </div></section>`;
+      <div class="pp-grid">
+        <div class="pp-img-frame"><img src="${p.image}" /></div>
+        <div class="pp-info">
+          <p class="pp-cat">${category}</p>
+          <!-- Kilataje dorado grande + peso (si > 0) -->
+          <div class="gold-text" style="font-size: 2.5rem; font-weight: 700; line-height: 1.1; margin-bottom: 1rem;">
+            ${p.karat}k${p.weightGrams > 0 ? ' · ' + p.weightGrams + 'g' : ''}
+          </div>
+
+          <!-- Precio o mensaje de consulta -->
+          ${p.priceType !== 'hidden' ? `
+            <div class="pp-price-row" style="margin-bottom: 1.2rem;">
+              <span class="pp-price gold-text">${getDisplayPrice(p)}</span>
+            </div>
+          ` : `
+          `}
+
+          <!-- Botón de acción principal -->
+          ${cart && cart.canAddToCart(p)
+        ? `<button class="btn-primary pp-add" id="pp-add" style="width: 100%; margin-bottom: 2rem;">${t("add_to_cart")}</button>`
+        : `<a href="https://wa.me/${window.DKY_CONFIG?.WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola! Me interesa esta pieza")}" class="btn-primary pp-add" style="width: 100%; margin-bottom: 2rem;">💬 ${t("inquire_whatsapp")}</a>`
+      }
+
+          <!-- Productos similares (misma categoría) -->
+          ${renderSimilarProducts(similarItems, currentLang)}
+
+          <!-- Detalles técnicos (si existen) -->
+          ${detailsArray.length ? `
+            <div class="card details-card" style="margin-top: 2rem;">
+              <h2>${t("details")}</h2>
+              ${detailsArray.map(d => `<p>${escape(d)}</p>`).join('')}
+            </div>
+          ` : ''}
+        </div>
+      </div>
+      </div></section>
+    `;
 
     if (cart && cart.canAddToCart(p)) {
       document.getElementById("pp-add")?.addEventListener("click", () => cart.cartAdd(p));
@@ -142,7 +195,7 @@ window.DKYProduct = (function() {
         document.removeEventListener('productsLoaded', onLoad);
       });
     }
-    return () => {};
+    return () => { };
   }
 
   ensureProducts();
@@ -151,7 +204,7 @@ window.DKYProduct = (function() {
     PRODUCTS = window.DKY_PRODUCTS;
   }
 
-  window.addEventListener('langchange', function() {
+  window.addEventListener('langchange', function () {
     if (currentProductId && window.location.hash.includes('/shop/')) {
       ensureProducts();
       renderContent(currentProductId);
