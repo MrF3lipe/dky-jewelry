@@ -32,10 +32,6 @@ window.DKYRouter = (function() {
       pageFn = window.DKYProduct ? () => window.DKYProduct.render(parts[1]) : null;
     } else if (parts[0] === "sell-gold") {
       pageFn = window.DKYSell ? () => window.DKYSell.render() : null;
-    } else if (parts[0] === "login") {
-      pageFn = window.DKYLogin ? () => window.DKYLogin.render() : null;
-    } else if (parts[0] === "admin") {
-      pageFn = window.DKYAdmin ? () => window.DKYAdmin.render() : null;
     } else {
       pageFn = window.DKYNotFound ? () => window.DKYNotFound.render() : null;
     }

@@ -4,6 +4,5 @@ window.DKY_CONFIG = {
   BUYBACK_MIN_PCT: 0.90,
   BUYBACK_MAX_PCT: 0.92,
   FALLBACK_USD_PER_OZ: 4354.5,
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1b3VmYnVxbXlydGN1bXBwYWVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTkzOTYsImV4cCI6MjA5Mjg5NTM5Nn0.5CfnWvs_A6MmwPC8HrH0uXdss-cjQLZ1IRuBIiHuXsY',
-  SUPABASE_URL: 'https://buoufbuqmyrtcumppaeq.supabase.co'
+  API_BASE_URL: 'https://dkyalmacen.eliasworks.uy/api'
 };

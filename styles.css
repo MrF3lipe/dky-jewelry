@@ -235,6 +235,16 @@ h1,h2,h3,h4 { font-family: var(--font-display); margin: 0; letter-spacing: -0.01
 .product-name { font-size: 18px; font-weight: 600; margin-top: 4px; font-family: var(--font-body); }
 .product-desc { font-size: 14px; color: var(--muted-fg); margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .product-row { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; }
+.product-name {
+  padding: 8px 12px 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .product-price { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--gold-bright); }
 .product-view { font-size: 12px; color: color-mix(in oklab, var(--foreground) 70%, transparent); display: inline-flex; align-items: center; gap: 4px; }
 .product-card:hover .product-view { color: var(--gold-bright); }

@@ -66,13 +66,14 @@ window.DKYShop = (function() {
       </div>
       <div class="products-grid">${filtered.map(p => {
         return `
-          <div class="product-card">
-            <a href="/shop/${p.id}">
-              <div class="product-img">
-                <img src="${p.image}" />
-                <span class="karat-tag">${p.karat}k</span>
-              </div>
-            </a>
+            <div class="product-card">
+              <a href="/shop/${p.id}">
+                <div class="product-img">
+                  <img src="${p.image}" />
+                  <span class="karat-tag">${p.karat}k</span>
+                </div>
+                <div class="product-name">${escape(getProductText(p, 'name', currentLang))}</div>
+              </a>
             <button class="add-btn ${justAdded === p.id ? "added" : ""}" data-add="${p.id}">
               ${justAdded === p.id ? t("added") : t("add_to_cart")}
             </button>
