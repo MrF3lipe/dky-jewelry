@@ -28,7 +28,7 @@ window.DKYShop = (function() {
 
   function renderProducts(container) {
     if (!PRODUCTS.length) {
-      container.innerHTML = '<div class="loading" style="text-align:center;padding:60px;">Cargando productos...</div>';
+      container.innerHTML = '<div class="empty-state" style="text-align:center;padding:60px;"><p style="font-size:18px;margin-bottom:8px;">✨ No hay productos disponibles</p><p class="muted">Vuelve pronto para ver las últimas piezas</p></div>';
       return;
     }
 
