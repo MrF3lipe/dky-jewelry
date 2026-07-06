@@ -1,64 +1,50 @@
 window.DKYProducts = (function() {
   "use strict";
   
-
-  const SUPABASE_URL = window.DKY_CONFIG.SUPABASE_URL;
-  const SUPABASE_ANON_KEY = window.DKY_CONFIG.SUPABASE_ANON_KEY;
+  const API_URL = window.DKY_CONFIG.API_BASE_URL + '/web_products.php';
   
   let products = [];
   
   function normalizeProduct(raw) {
     return {
       id: raw.id,
-      image: raw.img,                  // ← antes raw.image
+      image: raw.image || '',
       karat: raw.karat,
-      weightGrams: raw.weight,         // ← antes raw.weight_grams
+      weightGrams: raw.weight,
       name: {
-        es: raw.name_es?.trim() || "",
-        en: raw.name_en?.trim() || ""
+        es: raw.name || 'Sin nombre',
+        en: raw.name || 'Unnamed'
       },
-      category: raw.category || "other",
+      category: raw.category || 'other',
       description: {
-        es: raw.description_es || "",
-        en: raw.description_en || ""
+        es: '',
+        en: ''
       },
       details: {
-        es: typeof raw.details_es === 'string' 
-          ? raw.details_es 
-          : Array.isArray(raw.details_es) 
-            ? raw.details_es.join('\n') 
-            : '',
-        en: typeof raw.details_en === 'string' 
-          ? raw.details_en 
-          : Array.isArray(raw.details_en) 
-            ? raw.details_en.join('\n') 
-            : ''
+        es: '',
+        en: ''
       },
       shortDesc: {
-        es: raw.short_descr_es || "",  // ← antes raw.short_desc_es
-        en: raw.short_descr_en || ""   // ← antes raw.short_desc_en
+        es: '',
+        en: ''
       },
-      priceType: raw.price_type,
-      priceUsd: raw.price || null,     // ← antes raw.price_usd
-      priceMinUsd: raw.minprice || null,// ← antes raw.pricemin
-      priceMaxUsd: raw.maxprice || null,// ← antes raw.pricemax
+      priceType: 'fixed',
+      priceUsd: raw.price || null,
+      priceMinUsd: null,
+      priceMaxUsd: null,
     };
   }
   
   async function fetchProducts() {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/Productos?select=*`, {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-      }
-    });
-    
-    const rawProducts = await response.json();
-    products = rawProducts.map(normalizeProduct);
-    window.DKY_PRODUCTS = products;
-    
-    document.dispatchEvent(new CustomEvent('productsLoaded', { detail: products }));
-    
+    try {
+      const response = await fetch(API_URL);
+      const rawProducts = await response.json();
+      products = rawProducts.map(normalizeProduct);
+      window.DKY_PRODUCTS = products;
+      document.dispatchEvent(new CustomEvent('productsLoaded', { detail: products }));
+    } catch (err) {
+      console.error('Error al cargar productos:', err);
+    }
   }
   
   function getProducts() {
