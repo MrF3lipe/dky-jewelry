@@ -160,9 +160,15 @@ window.DKYProduct = (function () {
           </div>
 
           <!-- Precio o mensaje de consulta -->
-            <div class="pp-price-row" style="margin-bottom: 1.2rem;">
+          <div class="pp-price-row" style="margin-bottom: 1.2rem;">
               <span class="pp-price gold-text">${getDisplayPrice(p)}</span>
             </div>
+
+          <aside class="financing-card" aria-label="${t("financing_title")}">
+            <h2>${t("financing_title")}</h2>
+            <div class="financing-option"><div><strong>${t("layaway_title")}</strong><p>${t("layaway_detail")}</p></div></div>
+            <div class="financing-option"><div><strong>${t("acima_title")}</strong><p>${t("acima_detail")}</p></div><a href="https://shopacima.com/DKY-Jewelry" target="_blank" rel="noopener noreferrer" class="financing-link">${t("acima_link")} <span aria-hidden="true">↗</span></a></div>
+          </aside>
 
           <!-- Botón de acción principal -->
           ${cart && cart.canAddToCart(p)

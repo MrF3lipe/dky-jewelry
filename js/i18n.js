@@ -193,6 +193,12 @@ window.DKYI18n = (function() {
   "info_callout": "La forma y el estado de la pieza ajustan la tasa dentro del rango indicado.",
   "add_to_cart": "Agregar a mi selección",
   "get_quote_whatsapp": "Solicitar cotización por WhatsApp"
+  ,"financing_title": "Opciones de financiamiento",
+  "layaway_title": "Layaway disponible",
+  "layaway_detail": "Separa tu prenda con 15% del valor total y completa el resto en 30 días.",
+  "acima_title": "Financiamiento con Acima",
+  "acima_detail": "Llévate tu prenda hoy y conoce las opciones disponibles.",
+  "acima_link": "Financiar con Acima"
 });
   Object.assign(translations.en, {
   "fine_gold": "Fine gold",
@@ -236,6 +242,12 @@ window.DKYI18n = (function() {
   "info_callout": "The form and condition of your piece adjust the rate within the indicated range.",
   "add_to_cart": "Add to my selection",
   "get_quote_whatsapp": "Request a quote on WhatsApp"
+  ,"financing_title": "Financing options",
+  "layaway_title": "Layaway available",
+  "layaway_detail": "Reserve your piece with 15% of the total and pay the rest within 30 days.",
+  "acima_title": "Financing with Acima",
+  "acima_detail": "Take your piece home today and explore available options.",
+  "acima_link": "Finance with Acima"
 });
 
   let currentLang = "es";

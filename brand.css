@@ -132,6 +132,13 @@ body { line-height: 1.6; }
 .loading, .empty-state { padding: 50px 24px; }
 .pp-img-frame { border-radius: 4px; }
 .pp-info h1 { font: 500 clamp(30px, 4vw, 48px)/1.2 var(--font-editorial); }
+.financing-card { margin: 0 0 28px; padding: 22px; border: 1px solid var(--border); background: color-mix(in oklab, var(--card) 90%, var(--gold) 10%); }
+.financing-card h2 { margin: 0 0 17px; font: 500 20px/1.2 var(--font-editorial); }
+.financing-option { display: flex; align-items: end; justify-content: space-between; gap: 16px; padding-top: 15px; border-top: 1px solid var(--border); }
+.financing-option + .financing-option { margin-top: 15px; }
+.financing-option strong { display: block; font-size: 13px; }
+.financing-option p { max-width: 330px; margin: 4px 0 0; color: var(--muted-fg); font-size: 12px; line-height: 1.55; }
+.financing-link { flex: 0 0 auto; min-height: 34px; padding: 7px 0; border-bottom: 1px solid var(--gold); color: var(--gold-bright); font-size: 12px; white-space: nowrap; }
 .drawer { background: var(--background); }
 .drawer-head h2 { font: 500 28px var(--font-editorial); }
 .cart-item { border-radius: 3px; padding: 12px; }
@@ -204,6 +211,8 @@ body { line-height: 1.6; }
   .calc-panel, .quote-panel { padding: 24px 20px; }
   .chart { padding: 18px 14px; }
   .quote-list li { font-size: 12px; }
+  .financing-option { display: block; }
+  .financing-link { display: inline-block; margin-top: 12px; }
   .footer-inner { grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .footer-inner .brand { grid-column: 1 / -1; margin-bottom: 8px; }
   #site-footer { margin-top: 56px; }
