@@ -28,6 +28,14 @@ window.DKYHome = (function() {
           <a href="/sell-gold" class="spot-ticker">${window.DKYSpot.tickerHTML()}</a>
         </div>
       </div>
+      <section class="home-gallery container" aria-labelledby="home-gallery-title">
+        <div class="home-gallery-heading"><div><p class="eyebrow">${t("home_gallery_eyebrow")}</p><h2 id="home-gallery-title">${t("home_gallery_title")}</h2></div><p>${t("home_gallery_desc")}</p></div>
+        <div class="home-gallery-grid">
+          <figure class="home-gallery-wide"><img src="assets/dky-shopping-moments.jpg" width="1200" height="800" alt="${t("home_gallery_shopping_alt")}" loading="lazy"></figure>
+          <figure><img src="assets/dky-city-style.jpg" width="1000" height="1200" alt="${t("home_gallery_city_alt")}" loading="lazy"></figure>
+          <figure><img src="assets/dky-family-moment.jpg" width="1000" height="1200" alt="${t("home_gallery_family_alt")}" loading="lazy"></figure>
+        </div>
+      </section>
       <section class="home-paths container">
         <div class="section-heading"><h2>${t("home_paths_title")}</h2><p>${t("home_paths_desc")}</p></div>
         <div class="home-paths-grid">
@@ -42,14 +50,6 @@ window.DKYHome = (function() {
             <a href="/sell-gold" class="text-link">${t("calculate_gold")} <span aria-hidden="true">↗</span></a>
             <p class="story-note">${t("final_offer_note")}</p>
           </div>
-        </div>
-      </section>
-      <section class="home-gallery container" aria-labelledby="home-gallery-title">
-        <div class="home-gallery-heading"><div><p class="eyebrow">${t("home_gallery_eyebrow")}</p><h2 id="home-gallery-title">${t("home_gallery_title")}</h2></div><p>${t("home_gallery_desc")}</p></div>
-        <div class="home-gallery-grid">
-          <figure class="home-gallery-wide"><img src="assets/dky-shopping-moments.jpg" width="1200" height="800" alt="${t("home_gallery_shopping_alt")}" loading="lazy"></figure>
-          <figure><img src="assets/dky-city-style.jpg" width="1000" height="1200" alt="${t("home_gallery_city_alt")}" loading="lazy"></figure>
-          <figure><img src="assets/dky-family-moment.jpg" width="1000" height="1200" alt="${t("home_gallery_family_alt")}" loading="lazy"></figure>
         </div>
       </section>
       <section class="home-service container">
