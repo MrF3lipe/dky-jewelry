@@ -4,7 +4,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 function fixture(lang = 'es') {
-  const ids = ['app', 'campaign-products', 'campaign-copy', 'campaign-feedback', 'campaign-explore', 'campaign-selection', 'campaign-selection-title'];
+  const ids = ['app', 'campaign-products', 'campaign-preowned-products', 'campaign-copy', 'campaign-feedback', 'campaign-explore', 'campaign-selection', 'campaign-selection-title'];
   const nodes = Object.fromEntries(ids.map(id => [id, {
     innerHTML: '', textContent: '', events: {},
     addEventListener(type, fn) { this.events[type] = fn; },
@@ -32,6 +32,8 @@ function fixture(lang = 'es') {
   const f = fixture();
   let dispose = f.render();
   assert.match(f.nodes['campaign-products'].innerHTML, /Consulta las prendas participantes/);
+  assert.match(f.nodes['campaign-preowned-products'].innerHTML, /selección de joyas usadas/);
+  assert.match(f.nodes.app.innerHTML, /claramente como usada/);
   assert.doesNotMatch(f.nodes['campaign-products'].innerHTML, /Anillo|Excluded/);
   assert.match(f.nodes['campaign-products'].innerHTML, /LAURA10.*10%/);
   assert.match(f.nodes.app.innerHTML, /únicamente a las prendas seleccionadas/);
@@ -52,11 +54,14 @@ function fixture(lang = 'es') {
   assert.equal(f.nodes['campaign-explore'].events.click, undefined);
 
   f.context.window.DKY_CAMPAIGN.productIds = ['1'];
+  f.context.window.DKY_CAMPAIGN.preownedProductIds = ['2'];
   dispose = f.render();
   assert.match(f.nodes['campaign-products'].innerHTML, /Anillo &lt;oro&gt;/);
   assert.doesNotMatch(f.nodes['campaign-products'].innerHTML, /Excluded/);
   assert.match(f.nodes['campaign-products'].innerHTML, /LAURA10.*ID%3A%201/);
   assert.match(f.nodes['campaign-products'].innerHTML, /https:\/\/www.dkygold.com\/ring.jpg/);
+  assert.match(f.nodes['campaign-preowned-products'].innerHTML, /Excluded/);
+  assert.match(f.nodes['campaign-preowned-products'].innerHTML, /Prenda usada/);
   f.listeners.get('productsLoaded')({ detail: [{ id: '1', name: 'Updated', image: 'javascript:alert(1)' }] });
   assert.match(f.nodes['campaign-products'].innerHTML, /Updated/);
   assert.doesNotMatch(f.nodes['campaign-products'].innerHTML, /javascript:/);

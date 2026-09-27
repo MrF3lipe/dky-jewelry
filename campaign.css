@@ -35,6 +35,7 @@
 .campaign-empty p { max-width: 670px; font-size: 14px; color: var(--muted-fg); line-height: 1.9; margin: 12px 0 23px; }
 .campaign-empty .btn-primary { display: inline-flex; gap: 25px; }
 .campaign-products-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 28px; }
+.campaign-preowned { border-top: 1px solid var(--border); margin-top: 64px; padding-top: 64px; }
 .campaign-product-photo { aspect-ratio: 4/5; position: relative; background: var(--card); overflow: hidden; }
 .campaign-product-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
 .campaign-product a:hover img { transform: scale(1.025); }
