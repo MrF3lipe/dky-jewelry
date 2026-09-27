@@ -44,6 +44,14 @@ window.DKYHome = (function() {
           </div>
         </div>
       </section>
+      <section class="home-gallery container" aria-labelledby="home-gallery-title">
+        <div class="home-gallery-heading"><div><p class="eyebrow">${t("home_gallery_eyebrow")}</p><h2 id="home-gallery-title">${t("home_gallery_title")}</h2></div><p>${t("home_gallery_desc")}</p></div>
+        <div class="home-gallery-grid">
+          <figure class="home-gallery-wide"><img src="assets/dky-shopping-moments.jpg" width="1200" height="800" alt="${t("home_gallery_shopping_alt")}" loading="lazy"></figure>
+          <figure><img src="assets/dky-city-style.jpg" width="1000" height="1200" alt="${t("home_gallery_city_alt")}" loading="lazy"></figure>
+          <figure><img src="assets/dky-family-moment.jpg" width="1000" height="1200" alt="${t("home_gallery_family_alt")}" loading="lazy"></figure>
+        </div>
+      </section>
       <section class="home-service container">
         <div><p class="eyebrow">${t("home_service_eyebrow")}</p><h2>${t("home_service_title")}</h2></div>
         <div><p>${t("home_service_desc")}</p><a href="${contact}" target="_blank" rel="noopener noreferrer" class="text-link">${t("inquire_whatsapp")} <span aria-hidden="true">↗</span></a></div>

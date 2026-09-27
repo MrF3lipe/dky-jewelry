@@ -33,7 +33,7 @@ function calculator(min, max, lang = 'es') {
 }
 
 const purity = { 10: 0.4167, 14: 0.5833, 18: 0.75, 22: 0.9167, 24: 1 };
-for (const [min, max] of [[0.90, 0.91], [0.85, 0.88]]) {
+for (const [min, max] of [[0.89, 0.91], [0.85, 0.88]]) {
   const c = calculator(min, max);
   assert.ok(!c.elements.get('app').innerHTML.includes(`${min * 100}–${max * 100}%`));
   for (const karat of Object.keys(purity)) for (const form of ['solid', 'semi-solid']) for (const condition of ['new', 'old']) {
@@ -53,7 +53,7 @@ for (const [min, max] of [[0.90, 0.91], [0.85, 0.88]]) {
 }
 const english = calculator(null, null, 'en');
 assert.equal(english.config.BUYBACK_MAX_PCT, 0.91);
-assert.ok(decodeURIComponent(english.elements.get('quote-cta').href).includes('Estimated payout: $675 – $683 USD'));
+assert.ok(decodeURIComponent(english.elements.get('quote-cta').href).includes('Estimated payout: $668 – $683 USD'));
 console.log('PASS: all karats, forms, conditions, configurable rates, invalid weights, and WhatsApp quotes.');
 
 // The chart must collect real observations, never invent a market history.
