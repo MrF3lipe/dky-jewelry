@@ -18,7 +18,7 @@ window.DKYHome = (function() {
           <div class="hero-signature"><span class="signature-line"></span><span>${t("footer_tagline")}</span></div>
         </div>
         <figure class="hero-photo">
-          <img src="assets/hero-jewelry.jpg" width="1600" height="1000" alt="${t("hero_image_alt")}" fetchpriority="high">
+          <img src="assets/dky-jewelry-experience.jpg" width="1200" height="1000" alt="${t("hero_image_alt")}" fetchpriority="high">
           <figcaption><span>THE GOLD EDIT</span><span>14k · 18k · 22k</span></figcaption>
         </figure>
       </section>
