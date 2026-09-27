@@ -17,9 +17,14 @@ window.DKYShop = (function() {
   function escape(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
   function getDisplayPrice(p) {
-    if (p.priceType === "fixed") return fmtMoney(p.priceUsd);
+    if (p.priceType === "fixed" && p.priceUsd != null) return fmtMoney(p.priceUsd);
     if (p.priceType === "range") return fmtMoney(p.priceMinUsd) + " – " + fmtMoney(p.priceMaxUsd);
-    return "";
+    return window.DKYI18n ? window.DKYI18n.t('check_price') : 'Consultar precio';
+  }
+
+  function safeImage(value) {
+    try { const url = new URL(value, window.location.href); return /^https?:$/.test(url.protocol) ? escape(url.href) : ''; }
+    catch { return ''; }
   }
 
   function getCategoryId(product) {
@@ -27,8 +32,19 @@ window.DKYShop = (function() {
   }
 
   function renderProducts(container) {
+    const spanish = window.DKYI18n?.getLang() !== 'en';
+    const status = window.DKYProducts?.getStatus() || 'loading';
+    if (status === 'loading') {
+      container.innerHTML = `<div class="empty-state" role="status"><p>${spanish ? 'Cargando colección…' : 'Loading collection…'}</p></div>`;
+      return;
+    }
+    if (status === 'error') {
+      container.innerHTML = `<div class="empty-state" role="status"><p>${spanish ? 'No pudimos cargar la colección.' : 'We could not load the collection.'}</p><p class="muted">${spanish ? 'Comprueba tu conexión e inténtalo de nuevo.' : 'Check your connection and try again.'}</p><button type="button" class="btn-outline" id="retry-products">${spanish ? 'Volver a intentar' : 'Try again'}</button></div>`;
+      container.querySelector('#retry-products').addEventListener('click', () => window.DKYProducts.fetchProducts());
+      return;
+    }
     if (!PRODUCTS.length) {
-      container.innerHTML = '<div class="empty-state" style="text-align:center;padding:60px;"><p style="font-size:18px;margin-bottom:8px;">✨ No hay productos disponibles</p><p class="muted">Vuelve pronto para ver las últimas piezas</p></div>';
+      container.innerHTML = `<div class="empty-state"><p>${spanish ? 'La colección se está renovando.' : 'Our collection is being refreshed.'}</p><p class="muted">${spanish ? 'Vuelve pronto para descubrir las nuevas piezas.' : 'Check back soon to discover new pieces.'}</p></div>`;
       return;
     }
 
@@ -54,7 +70,7 @@ window.DKYShop = (function() {
     container.innerHTML = `
       <div class="cat-filter">
         ${catItems.map(cat => `
-          <button class="cat-btn ${activeCat === cat.id ? "active" : ""}" data-cat="${cat.id}">
+          <button type="button" class="cat-btn ${activeCat === cat.id ? "active" : ""}" aria-pressed="${activeCat === cat.id}" data-cat="${cat.id}">
             ${cat.label} 
             <span class="count">${
               cat.id === "all" 
@@ -64,17 +80,19 @@ window.DKYShop = (function() {
           </button>
         `).join("")}
       </div>
+      ${!filtered.length ? `<div class="empty-state" role="status"><p>${spanish ? 'No hay piezas disponibles en esta categoría.' : 'No pieces are available in this category.'}</p><p class="muted">${spanish ? 'Explora otra categoría para descubrir más joyas.' : 'Explore another category to discover more jewelry.'}</p></div>` : ''}
       <div class="products-grid">${filtered.map(p => {
         return `
             <div class="product-card">
-              <a href="/shop/${p.id}">
+              <a href="/shop/${encodeURIComponent(p.id)}">
                 <div class="product-img">
-                  <img src="${p.image}" />
-                  <span class="karat-tag">${p.karat}k</span>
+                  <img src="${safeImage(p.image)}" alt="${escape(getProductText(p, 'name', currentLang))}" loading="lazy" decoding="async" />
+                  <span class="karat-tag">${escape(p.karat)}k</span>
                 </div>
                 <div class="product-name">${escape(getProductText(p, 'name', currentLang))}</div>
+                <div class="product-price">${getDisplayPrice(p)}</div>
               </a>
-            <button class="add-btn ${justAdded === p.id ? "added" : ""}" data-add="${p.id}">
+            <button type="button" class="add-btn ${justAdded === p.id ? "added" : ""}" data-add="${escape(p.id)}">
               ${justAdded === p.id ? t("added") : t("add_to_cart")}
             </button>
           </div>`;
@@ -115,17 +133,17 @@ window.DKYShop = (function() {
   }
 
   function initProducts() {
-    if (window.DKY_PRODUCTS && window.DKY_PRODUCTS.length) {
-      PRODUCTS = window.DKY_PRODUCTS;
-      const grid = document.getElementById("shop-grid");
-      if (grid) renderProducts(grid);
-    } else if (!initialized) {
+    PRODUCTS = window.DKYProducts?.getProducts() || window.DKY_PRODUCTS || [];
+    if (!initialized) {
       initialized = true;
       document.addEventListener('productsLoaded', function onLoad(e) {
         PRODUCTS = e.detail;
         const grid = document.getElementById("shop-grid");
         if (grid) renderProducts(grid);
-        document.removeEventListener('productsLoaded', onLoad);
+      });
+      document.addEventListener('productsStatus', () => {
+        const grid = document.getElementById('shop-grid');
+        if (grid) renderProducts(grid);
       });
     }
   }
@@ -138,12 +156,8 @@ window.DKYShop = (function() {
 
     const grid = document.getElementById("shop-grid");
     if (grid) {
-      if (PRODUCTS.length) {
-        renderProducts(grid);
-      } else {
-        grid.innerHTML = '<div class="loading" style="text-align:center;padding:60px;">Cargando productos...</div>';
-        initProducts();
-      }
+      initProducts();
+      renderProducts(grid);
     }
     return () => { if (timeout) clearTimeout(timeout); };
   }
@@ -152,7 +166,7 @@ window.DKYShop = (function() {
 
   window.addEventListener('langchange', function() {
     const grid = document.getElementById("shop-grid");
-    if (grid && PRODUCTS.length && window.location.hash === '#/shop') {
+    if (grid) {
       renderProducts(grid);
     }
   });

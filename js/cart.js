@@ -4,6 +4,9 @@ window.DKYCart = (function() {
   const CART_KEY = "dky-cart";
   let cart = [];
   let listeners = [];
+  let returnFocus = null;
+  let previousOverflow = '';
+  let inertElements = [];
   
   function getProductText(product, field, lang) {
     if (!product[field]) return "";
@@ -30,7 +33,8 @@ window.DKYCart = (function() {
   
   function loadCart() {
     try { 
-      cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]"); 
+      cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+      cart = Array.isArray(cart) ? cart.filter(i => i?.product && Number.isFinite(i.qty) && i.qty > 0).map(i => ({ ...i, product: { ...i.product, id: String(i.product.id), priceType: i.product.priceType === 'fixed' && i.product.priceUsd == null ? 'hidden' : i.product.priceType } })) : [];
     } catch (e) { 
       cart = []; 
     }
@@ -130,27 +134,46 @@ window.DKYCart = (function() {
     const overlay = document.getElementById("cart-overlay");
     const drawer = document.getElementById("cart-drawer");
     if (!overlay || !drawer) return;
+    if (!drawer.hidden) return;
+    returnFocus = document.activeElement;
+    previousOverflow = document.body.style.overflow;
     overlay.removeAttribute('hidden');
     drawer.removeAttribute('hidden');
+    drawer.setAttribute('aria-hidden', 'false');
+    inertElements = ['app', 'site-header', 'site-footer'].map(id => document.getElementById(id)).filter(Boolean).map(el => ({ el, inert: el.inert }));
+    inertElements.forEach(({ el }) => { el.inert = true; });
     document.body.style.overflow = "hidden";
     renderCartDrawer();
+    document.getElementById('cart-close')?.focus();
   }
   
   function closeCart() {
-    saveCart()
     const overlay = document.getElementById("cart-overlay");
     const drawer = document.getElementById("cart-drawer");
     if (!overlay || !drawer) return;
     overlay.setAttribute('hidden', '');
     drawer.setAttribute('hidden', '');
     drawer.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
+    document.body.style.overflow = previousOverflow;
+    inertElements.forEach(({ el, inert }) => { el.inert = inert; });
+    inertElements = [];
+    if (returnFocus?.isConnected) returnFocus.focus();
+    returnFocus = null;
   }
   
   function escape(s) {
     return String(s).replace(/[&<>"']/g, (c) => ({ 
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" 
     }[c]));
+  }
+
+  function safeImage(value) {
+    try {
+      const url = new URL(value, window.location.href);
+      return /^https?:$/.test(url.protocol) ? escape(url.href) : '';
+    } catch (_) {
+      return '';
+    }
   }
   
   function whatsappLink(msg) {
@@ -243,23 +266,23 @@ window.DKYCart = (function() {
       const productName = getProductText(i.product, 'name', lang);
       return `
       <div class="cart-item">
-        <img src="${escape(i.product.image)}" alt="${escape(productName)}" />
+        <img src="${safeImage(i.product.image)}" alt="${escape(productName)}" />
         <div class="info">
           <div class="info-top">
             <div>
               <div class="name">${escape(productName)}</div>
-              <div class="meta">${i.product.karat}k${i.product.weightGrams > 0 ? ' · ' + i.product.weightGrams + 'g' : ''}</div>
+              <div class="meta">${escape(i.product.karat)}k${i.product.weightGrams > 0 ? ' · ' + escape(i.product.weightGrams) + 'g' : ''}</div>
               ${i.product.priceType !== "fixed" ? `<div class="meta" style="color: var(--gold-bright); font-size: 10px;">${i.product.priceType === "range" ? (i18n ? i18n.t("estimated_price") : "Estimated") : (i18n ? i18n.t("check_price") : "Check")}</div>` : ''}
             </div>
-            <button type="button" class="remove" data-remove="${escape(i.product.id)}">
+            <button type="button" class="remove" aria-label="${lang === 'es' ? 'Eliminar' : 'Remove'} ${escape(productName)}" data-remove="${escape(i.product.id)}">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             </button>
           </div>
           <div class="controls">
             <div class="qty">
-              <button data-dec="${escape(i.product.id)}">−</button>
+              <button type="button" aria-label="${lang === 'es' ? 'Reducir cantidad' : 'Decrease quantity'}" data-dec="${escape(i.product.id)}">−</button>
               <span>${i.qty}</span>
-              <button data-inc="${escape(i.product.id)}">+</button>
+              <button type="button" aria-label="${lang === 'es' ? 'Aumentar cantidad' : 'Increase quantity'}" data-inc="${escape(i.product.id)}">+</button>
             </div>
             <span class="item-price">${(function() {
               if (i.product.priceType === "fixed") return fmtMoney(i.product.priceUsd * i.qty);
@@ -311,6 +334,7 @@ window.DKYCart = (function() {
           const item = cart.find(i => i.product.id === btn.dataset.dec);
           if (item) cartSetQty(item.product.id, item.qty - 1);
         }
+        if (!document.activeElement || document.activeElement === document.body) document.getElementById('cart-close')?.focus();
       });
     }
     
@@ -336,6 +360,17 @@ window.DKYCart = (function() {
     if (cartBtn) cartBtn.addEventListener("click", openCart);
     if (cartClose) cartClose.addEventListener("click", closeCart);
     if (cartOverlay) cartOverlay.addEventListener("click", closeCart);
+    document.addEventListener('keydown', e => {
+      const drawer = document.getElementById('cart-drawer');
+      if (!drawer || drawer.hidden) return;
+      if (e.key === 'Escape') { e.preventDefault(); closeCart(); return; }
+      if (e.key !== 'Tab') return;
+      const focusable = Array.from(drawer.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), [tabindex="0"]')).filter(el => !el.closest('[hidden]'));
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (!first) { e.preventDefault(); return; }
+      if (e.shiftKey && (document.activeElement === first || !drawer.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement === last || !drawer.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+    });
     
     window.addEventListener('langchange', () => {
       renderCartDrawer();

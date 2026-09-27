@@ -30,7 +30,9 @@ window.DKYRouter = (function() {
       pageFn = window.DKYShop ? () => window.DKYShop.render() : null;
     } else if (parts[0] === "shop" && parts.length === 2) {
       pageFn = window.DKYProduct ? () => window.DKYProduct.render(parts[1]) : null;
-    } else if (parts[0] === "sell-gold") {
+    } else if (parts[0] === "laura" && parts.length === 1) {
+      pageFn = window.DKYCampaign ? () => window.DKYCampaign.render() : null;
+    } else if (parts[0] === "sell-gold" && parts.length === 1) {
       pageFn = window.DKYSell ? () => window.DKYSell.render() : null;
     } else {
       pageFn = window.DKYNotFound ? () => window.DKYNotFound.render() : null;
@@ -42,7 +44,10 @@ window.DKYRouter = (function() {
     document.querySelectorAll("#main-nav a").forEach(a => {
       const href = a.getAttribute("href");
       const route = href ? href.split("/").filter(Boolean)[0] : "";
-      a.classList.toggle("active", route === parts[0] || (route === undefined && parts.length === 0));
+      const active = route === parts[0];
+      a.classList.toggle("active", active);
+      if (active) a.setAttribute("aria-current", "page");
+      else a.removeAttribute("aria-current");
     });
     
     window.scrollTo({ top: 0 });
@@ -64,6 +69,7 @@ window.DKYRouter = (function() {
     
     // Interceptar TODOS los clicks en enlaces internos
     document.addEventListener("click", (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const link = e.target.closest("a");
       if (!link) return;
       

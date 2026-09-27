@@ -94,22 +94,31 @@ window.DKYSpot = (function() {
   
   function bindTicker() {
     return onSpot((s) => {
+      const labelEl = document.getElementById("ticker-label");
+      if (labelEl) labelEl.textContent = getStatusLabel();
       const tickerEl = document.getElementById("ticker-price");
       if (tickerEl && s.perGram != null) {
         tickerEl.textContent = fmtMoney2(s.perGram) + "/g";
       }
     });
   }
+
+  function getStatusLabel() {
+    const spanish = window.DKYI18n?.getLang() !== "en";
+    if (spotState.source === "loading") return spanish ? "Consultando precio" : "Checking gold price";
+    if (spotState.source === "fallback") return spanish ? "Precio de referencia" : "Reference price";
+    return spanish ? "Precio del oro" : "Gold spot price";
+  }
   
   function tickerHTML() {
     const i18n = window.DKYI18n;
-    const label = i18n ? i18n.t("live_spot") : "Live spot";
+    const label = getStatusLabel();
     return `
       <span class="dot"></span>
-      <span class="label">${label}</span>
+      <span class="label" id="ticker-label">${label}</span>
       <span class="price" id="ticker-price">…</span>
     `;
   }
   
-  return { init, onSpot, getSpotPrice, bindTicker, tickerHTML, fmtMoney2 };
+  return { init, onSpot, getSpotPrice, bindTicker, tickerHTML, fmtMoney2, spotState, getStatusLabel };
 })();

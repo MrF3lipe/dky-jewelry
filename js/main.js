@@ -2,6 +2,7 @@
   "use strict";
 
   function init() {
+    document.getElementById("year").textContent = new Date().getFullYear();
 
     
     if (window.DKYTheme) window.DKYTheme.init();

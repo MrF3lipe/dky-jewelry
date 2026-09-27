@@ -1,85 +1,61 @@
 window.DKYHome = (function() {
   "use strict";
-  
   function render() {
-    const i18n = window.DKYI18n;
-    const spot = window.DKYSpot;
-    const t = (key) => i18n ? i18n.t(key) : key;
-    
+    const t = key => window.DKYI18n.t(key);
     const app = document.getElementById("app");
-    if (!app) return;
-    
+    const cfg = window.DKY_CONFIG;
+    const range = `${Math.round(cfg.BUYBACK_MIN_PCT * 100)}–${Math.round(cfg.BUYBACK_MAX_PCT * 100)}%`;
+    const contact = `https://wa.me/${encodeURIComponent(cfg.WHATSAPP_NUMBER)}?text=${encodeURIComponent(t("home_contact_message"))}`;
     app.innerHTML = `
-      <section class="hero">
-        <div class="container">
-          <div class="hero-frame">
-            <div class="hero-inner">
-              <span class="pill">✦ ${t("shop_jewelry")}</span>
-              <h1>
-                <span class="gold-text">DKY</span> ${t("gold_text_line2")}<br />
-                <span style="color: color-mix(in oklab, var(--foreground) 90%, transparent);">${t("real_gold_real_value")}</span>
-              </h1>
-              <p class="lead">${t("hero_desc")}</p>
-              <div class="spot-ticker">${spot ? spot.tickerHTML() : ''}</div>
-              <div class="hero-cta">
-                <a href="/shop" class="btn-primary">${t("enter_shop")}</a>
-                <a href="/sell-gold" class="btn-secondary">${t("sell_gold")}</a>
-              </div>
-            </div>
+      <section class="home-hero container">
+        <div class="hero-copy">
+          <p class="eyebrow">DKY JEWELRY · ${t("fine_gold")}</p>
+          <h1>${t("home_title")}<br><em>${t("home_title_end")}</em></h1>
+          <p class="hero-description">${t("home_description")}</p>
+          <div class="hero-cta">
+            <a href="/shop" class="btn-primary">${t("explore_collection")} <span aria-hidden="true">↗</span></a>
+            <a href="/sell-gold" class="text-link">${t("sell_gold")} <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="hero-signature"><span class="signature-line"></span><span>${t("footer_tagline")}</span></div>
+        </div>
+        <figure class="hero-photo">
+          <img src="assets/hero-jewelry.jpg" width="1600" height="1000" alt="${t("hero_image_alt")}" fetchpriority="high">
+          <figcaption><span>THE GOLD EDIT</span><span>14k · 18k · 22k</span></figcaption>
+        </figure>
+      </section>
+      <div class="service-strip">
+        <div class="container service-strip-inner">
+          <span>${t("home_service_gold")}</span><span>${t("home_service_attention")}</span>
+          <a href="/sell-gold" class="spot-ticker">${window.DKYSpot.tickerHTML()}</a>
+        </div>
+      </div>
+      <section class="home-paths container">
+        <div class="section-heading"><h2>${t("home_paths_title")}</h2><p>${t("home_paths_desc")}</p></div>
+        <div class="home-paths-grid">
+          <a href="/shop" class="collection-story">
+            <img src="assets/products/chain-necklace.jpg" width="800" height="800" alt="${t("collection_image_alt")}" loading="lazy">
+            <div><span class="eyebrow">${t("collection_title")}</span><h3>${t("home_collection_title")}</h3><span class="story-link">${t("explore_collection")} <span aria-hidden="true">↗</span></span></div>
+          </a>
+          <div class="sell-story">
+            <span class="eyebrow">${t("sell_gold")}</span>
+            <h3>${t("home_sell_title")}</h3>
+            <p>${t("home_sell_desc")}</p>
+            <div class="buyback-highlight"><strong>${range}</strong><span>${t("buyback_basis")}</span></div>
+            <a href="/sell-gold" class="text-link">${t("calculate_gold")} <span aria-hidden="true">↗</span></a>
+            <p class="story-note">${t("final_offer_note")}</p>
           </div>
         </div>
       </section>
-
-      <section class="kpis">
-        <div class="container">
-          <div class="kpis-grid">
-            <div class="card kpi">
-              <div class="num gold-text">${t("kpi1_k")}</div>
-              <p class="muted small" style="margin-top:12px;">${t("kpi1_l")}</p>
-            </div>
-            <div class="card kpi">
-              <div class="num gold-text">${t("kpi2_k")}</div>
-              <p class="muted small" style="margin-top:12px;">${t("kpi2_l")}</p>
-            </div>
-            <div class="card kpi">
-              <div class="num gold-text">${t("kpi3_k")}</div>
-              <p class="muted small" style="margin-top:12px;">${t("kpi3_l")}</p>
-            </div>
-          </div>
-        </div>
+      <section class="home-campaign container" aria-labelledby="campaign-teaser-title">
+        <div class="campaign-teaser-mark" aria-hidden="true">?</div>
+        <div><p class="eyebrow">${t("campaign_eyebrow")}</p><h2 id="campaign-teaser-title">${t("campaign_teaser_title")}</h2><p>${t("campaign_teaser_desc")}</p></div>
+        <a href="/laura" class="btn-primary">${t("campaign_discover")} <span aria-hidden="true">↗</span></a>
       </section>
-
-      <section class="showcase">
-        <div class="container">
-          <div class="showcase-frame">
-            <div class="showcase-grid">
-              <img src="assets/hero-jewelry.jpg" alt="" />
-              <div class="showcase-content">
-                <h2>${t("showcase_title")}</h2>
-                <p class="muted" style="margin-top:12px;">${t("showcase_desc")}</p>
-                <div class="showcase-list">
-                  <a class="showcase-link" href="/shop">
-                    <span><strong>${t("shop_our_jewelry")}</strong><span class="sub">${t("shop_our_jewelry_sub")}</span></span>
-                    <span style="color:var(--gold-bright);">↗</span>
-                  </a>
-                  <a class="showcase-link" href="/sell-gold">
-                    <span><strong>${t("sell_your_gold_showcase")}</strong><span class="sub">${t("sell_your_gold_sub")}</span></span>
-                    <span style="color:var(--gold-bright);">↗</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    `;
-    
-    if (spot && spot.bindTicker) {
-      spot.bindTicker();
-    }
-    
-    return () => {};
+      <section class="home-service container">
+        <div><p class="eyebrow">${t("home_service_eyebrow")}</p><h2>${t("home_service_title")}</h2></div>
+        <div><p>${t("home_service_desc")}</p><a href="${contact}" target="_blank" rel="noopener noreferrer" class="text-link">${t("inquire_whatsapp")} <span aria-hidden="true">↗</span></a></div>
+      </section>`;
+    return window.DKYSpot.bindTicker();
   }
-  
   return { render };
 })();

@@ -10,12 +10,14 @@ window.DKYSell = (function() {
   const $ = (sel, root) => (root || document).querySelector(sel);
   const fmtMoney = (n) => "$" + Math.round(n).toLocaleString();
   const fmtMoney2 = (n) => "$" + n.toFixed(2);
+  const fmtRate = (min, max) => (min * 100).toFixed(0) + "–" + (max * 100).toFixed(0) + "%";
   
   function setupChart() {
-    const STORAGE = "dky-chart-history-v1";
+    const STORAGE = "dky-chart-observations-v2";
     const MAX = 500;
     let history = [];
     try { history = JSON.parse(localStorage.getItem(STORAGE) || "[]"); } catch (e) { history = []; }
+    history = Array.isArray(history) ? history.filter(p => p && Number.isFinite(p.t) && Number.isFinite(p.v) && p.v > 0).slice(-MAX) : [];
     let hover = null;
 
     const RANGE_MS = 60 * 60 * 1000;
@@ -25,15 +27,7 @@ window.DKYSell = (function() {
     if (!spot) return () => {};
 
     const off = spot.onSpot((s) => {
-      if (s.perGram == null || !s.updatedAt) return;
-      if (history.length === 0) {
-        const now = Date.now(); let v = s.perGram * (1 - 0.018);
-        for (let i = 144; i > 0; i--) {
-          v += (Math.random() - 0.48) * (s.perGram * 0.0018);
-          history.push({ t: now - i * 10 * 60000, v });
-        }
-        history.push({ t: now, v: s.perGram });
-      } else {
+      if (s.perGram != null && s.updatedAt && s.source !== "fallback" && s.source !== "loading") {
         const last = history[history.length - 1];
         if (!last || Math.abs(last.v - s.perGram) >= 0.0001 || s.updatedAt.getTime() - last.t >= 30000) {
           history.push({ t: s.updatedAt.getTime(), v: s.perGram });
@@ -58,12 +52,22 @@ window.DKYSell = (function() {
     }
 
     function paint() {
-      const data = filtered();
+      const data = spot.spotState?.source === "fallback" ? [] : filtered();
       const content = $("#chart-content");
       const stats = $("#chart-stats");
       if (!content) return;
+      const spanish = window.DKYI18n?.getLang() !== "en";
+      const state = spot.spotState;
+      $("#chart-label").textContent = spot.getStatusLabel() + " · USD / g";
+      $("#chart-price").textContent = state?.perGram != null ? fmtMoney2(state.perGram) : "$—";
+      const updated = state?.updatedAt ? state.updatedAt.toLocaleTimeString() : "—";
+      $("#chart-foot").textContent = state?.source === "fallback"
+        ? (spanish ? "Estimación con precio de referencia. Confirmaremos el precio en la evaluación." : "Estimate based on a reference price. We will confirm pricing during evaluation.")
+        : (spanish ? "Fuente: " : "Source: ") + (state?.source || "—") + " · " + updated;
       if (data.length < 2) {
-        content.innerHTML = '<text x="360" y="120" text-anchor="middle" fill="currentColor" opacity="0.5" font-size="12">Loading live chart…</text>';
+        content.innerHTML = '<text x="360" y="120" text-anchor="middle" fill="currentColor" opacity="0.65" font-size="12">' + (spanish ? "El gráfico aparecerá al reunir cotizaciones reales." : "Chart appears as actual price observations are collected.") + '</text>';
+        $("#chart-change").textContent = "";
+        if (stats) stats.innerHTML = "";
         return;
       }
       const values = data.map((p) => p.v);
@@ -161,8 +165,11 @@ window.DKYSell = (function() {
     const spotPrice = spot?.getSpotPrice() || 0;
     const pureGrams = weight * PURITY[karat];
     const goldValue = pureGrams * spotPrice;
-    let minPct = 0.90, maxPct = 0.92;
-    maxPct -= (condition === "old" ? 0.01 : 0) + (form === "semi-solid" ? 0.01 : 0);
+    const cfg = window.DKY_CONFIG;
+    const minPct = cfg.BUYBACK_MIN_PCT;
+    // Condition and form can lower the upper estimate, never the advertised floor.
+    const adjustment = (condition === "old" ? 0.01 : 0) + (form === "semi-solid" ? 0.01 : 0);
+    const maxPct = Math.max(minPct, cfg.BUYBACK_MAX_PCT - adjustment);
     const minPay = goldValue * minPct, maxPay = goldValue * maxPct;
     
     const payoutMin = document.getElementById("payout-min");
@@ -175,11 +182,10 @@ window.DKYSell = (function() {
     if (payoutMax) payoutMax.textContent = fmtMoney(maxPay);
     if (pureGramsEl) pureGramsEl.textContent = pureGrams.toFixed(2) + " g";
     if (spotValueEl) spotValueEl.textContent = fmtMoney2(goldValue);
-    if (rateEl) rateEl.textContent = (minPct * 100).toFixed(0) + "–" + (maxPct * 100).toFixed(0) + "%";
+    if (rateEl) rateEl.textContent = fmtRate(minPct, maxPct);
     
     const i18n = window.DKYI18n;
     const lang = i18n?.getLang() || "es";
-    const cfg = window.DKY_CONFIG;
     const whatsappNumber = cfg ? cfg.WHATSAPP_NUMBER : "";
     
     let msg = "";
@@ -212,6 +218,7 @@ window.DKYSell = (function() {
     const spot = window.DKYSpot;
     const t = (key) => i18n ? i18n.t(key) : key;
     const app = document.getElementById("app");
+    const cfg = window.DKY_CONFIG;
     
     app.innerHTML = `
       <section class="sell">
@@ -220,12 +227,13 @@ window.DKYSell = (function() {
             <span class="pill">⚖ ${t("sell_your_gold_showcase")}</span>
             <h1>${t("sell_title")}</h1>
             <p>${t("sell_desc")}</p>
+            <div class="buyback-promise"><span>${t("buyback_intro")}</span><strong>${fmtRate(cfg.BUYBACK_MIN_PCT, cfg.BUYBACK_MAX_PCT)}</strong><span>${t("buyback_basis")}</span></div>
           </header>
 
           <div class="chart" id="chart-root">
             <div class="chart-head">
               <div>
-                <p class="meta"><span class="dot"></span> ${t("live_spot")} · USD / gram · LIVE</p>
+                <p class="meta"><span class="dot"></span> <span id="chart-label">${spot?.getStatusLabel() || t("live_spot")} · USD / g</span></p>
                 <div class="chart-price-row">
                   <span class="chart-price gold-text" id="chart-price">$—</span>
                   <span class="chart-change up" id="chart-change">+0.00 (0.00%)</span>
@@ -302,6 +310,7 @@ window.DKYSell = (function() {
               <ul class="quote-list">
                 <li><span>${t("pure_gold_content")}</span><span id="pure-grams">— g</span></li>
                 <li><span>${t("spot_value")}</span><span id="spot-value">$—</span></li>
+                <li><span>${t("buyback_rate")}</span><span id="rate">—</span></li>
               </ul>
               <a class="btn-primary quote-cta" id="quote-cta" href="#" target="_blank">${t("get_quote_whatsapp")}</a>
               <p class="quote-foot">${t("final_offer_note")}</p>
@@ -329,7 +338,8 @@ window.DKYSell = (function() {
     const weightInput = document.getElementById("weight");
     if (weightInput) {
       weightInput.addEventListener("input", (e) => {
-        weight = Math.max(0, parseFloat(e.target.value) || 0);
+        const enteredWeight = Number(e.target.value);
+        weight = Number.isFinite(enteredWeight) ? Math.max(0, enteredWeight) : 0;
         recalc();
       });
     }

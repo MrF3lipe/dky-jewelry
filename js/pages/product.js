@@ -23,9 +23,13 @@ window.DKYProduct = (function () {
   function escape(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
   function getDisplayPrice(p) {
-    if (p.priceType === "fixed") return fmtMoney(p.priceUsd);
+    if (p.priceType === "fixed" && p.priceUsd != null) return fmtMoney(p.priceUsd);
     if (p.priceType === "range") return fmtMoney(p.priceMinUsd) + " – " + fmtMoney(p.priceMaxUsd);
-    return "";
+    return window.DKYI18n?.t('check_price') || 'Consultar precio';
+  }
+  function safeImage(value) {
+    try { const url = new URL(value, window.location.href); return /^https?:$/.test(url.protocol) ? escape(url.href) : ''; }
+    catch { return ''; }
   }
 
   // Función robusta para convertir cualquier formato de detalles a un array limpio
@@ -90,7 +94,11 @@ window.DKYProduct = (function () {
     const products = (window.DKY_PRODUCTS && window.DKY_PRODUCTS.length)
       ? window.DKY_PRODUCTS
       : PRODUCTS;
-    const p = products.find(x => x.id === id);
+    const p = products.find(x => String(x.id) === String(id));
+    if (!p) {
+      if (window.DKYNotFound) window.DKYNotFound.render();
+      return;
+    }
 
     const sameCategory = PRODUCTS.filter(x => x.category === p.category && x.id !== p.id);
     function shuffle(arr) {
@@ -113,21 +121,16 @@ window.DKYProduct = (function () {
       items.forEach(sim => {
         const simName = getProductText(sim, 'name', lang);
         html += `
-          <a href="/shop/${sim.id}" class="similar-card">
+          <a href="/shop/${encodeURIComponent(sim.id)}" class="similar-card">
             <div class="similar-img">
-              <img src="${sim.image}" alt="${escape(simName)}" />
-              <span class="karat-tag small-karat">${sim.karat}k</span>
+              <img src="${safeImage(sim.image)}" alt="${escape(simName)}" loading="lazy" />
+              <span class="karat-tag small-karat">${escape(sim.karat)}k</span>
             </div>
             <span class="similar-price">${getDisplayPrice(sim)}</span>
           </a>`;
       });
       html += `</div></div>`;
       return html;
-    }
-
-    if (!p) {
-      if (window.DKYNotFound) window.DKYNotFound.render();
-      return;
     }
 
     const name = getProductText(p, 'name', currentLang);
@@ -145,21 +148,19 @@ window.DKYProduct = (function () {
     document.getElementById("app").innerHTML = `
       <section class="product-page"><div class="container"><a class="back-link" href="/shop">${t("back_to_shop")}</a>
       <div class="pp-grid">
-        <div class="pp-img-frame"><img src="${p.image}" /></div>
+        <div class="pp-img-frame"><img src="${safeImage(p.image)}" alt="${escape(name)}" /></div>
         <div class="pp-info">
           <p class="pp-cat">${category}</p>
+          <h1>${escape(name)}</h1>
           <!-- Kilataje dorado grande + peso (si > 0) -->
           <div class="gold-text" style="font-size: 2.5rem; font-weight: 700; line-height: 1.1; margin-bottom: 1rem;">
-            ${p.karat}k${p.weightGrams > 0 ? ' · ' + p.weightGrams + 'g' : ''}
+            ${escape(p.karat)}k${p.weightGrams > 0 ? ' · ' + escape(p.weightGrams) + 'g' : ''}
           </div>
 
           <!-- Precio o mensaje de consulta -->
-          ${p.priceType !== 'hidden' ? `
             <div class="pp-price-row" style="margin-bottom: 1.2rem;">
               <span class="pp-price gold-text">${getDisplayPrice(p)}</span>
             </div>
-          ` : `
-          `}
 
           <!-- Botón de acción principal -->
           ${cart && cart.canAddToCart(p)
@@ -189,21 +190,27 @@ window.DKYProduct = (function () {
 
   function render(id) {
     currentProductId = id;
-
-    // Intenta usar los productos que ya están en memoria global
-    if (ensureProducts()) {
-      renderContent(id);
-    } else {
-      // Si aún no hay productos, espera el evento
-      document.addEventListener('productsLoaded', function onLoad(e) {
-        PRODUCTS = e.detail;
-        if (currentProductId === id) {
-          renderContent(id);
-        }
-        document.removeEventListener('productsLoaded', onLoad);
-      });
+    function update() {
+      if (currentProductId !== id) return;
+      const spanish = window.DKYI18n?.getLang() !== 'en';
+      const status = window.DKYProducts?.getStatus();
+      if (status === 'ready' || (!status && ensureProducts())) {
+        PRODUCTS = window.DKYProducts?.getProducts() || window.DKY_PRODUCTS || [];
+        renderContent(id);
+        return;
+      }
+      const error = status === 'error';
+      document.getElementById('app').innerHTML = `<section class="product-page"><div class="container"><div class="empty-state" role="status"><p>${error ? (spanish ? 'No pudimos cargar esta pieza.' : 'We could not load this piece.') : (spanish ? 'Cargando pieza…' : 'Loading piece…')}</p>${error ? `<button type="button" class="btn-outline" id="retry-product">${spanish ? 'Volver a intentar' : 'Try again'}</button>` : ''}<a class="back-link" href="/shop">${window.DKYI18n?.t('back_to_shop') || 'Volver a la colección'}</a></div></div></section>`;
+      if (error) document.getElementById('retry-product')?.addEventListener('click', () => window.DKYProducts.fetchProducts());
     }
-    return () => { };
+    document.addEventListener('productsLoaded', update);
+    document.addEventListener('productsStatus', update);
+    update();
+    return () => {
+      document.removeEventListener('productsLoaded', update);
+      document.removeEventListener('productsStatus', update);
+      if (currentProductId === id) currentProductId = null;
+    };
   }
 
   ensureProducts();
