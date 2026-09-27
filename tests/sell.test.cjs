@@ -12,7 +12,7 @@ function calculator(min, max, lang = 'es') {
     elements.set(id, el);
     return el;
   }
-  ['app', 'weight', 'purity-note', 'payout-min', 'payout-max', 'pure-grams', 'spot-value', 'rate', 'quote-cta'].forEach(id => element(id));
+  ['app', 'weight', 'purity-note', 'payout-min', 'payout-max', 'pure-grams', 'spot-value', 'quote-cta'].forEach(id => element(id));
   const groups = {
     '#karat-row .karat-btn': [10, 14, 18, 22, 24].map(k => element('k' + k, { k })),
     '#form-row button': ['solid', 'semi-solid'].map(f => element(f, { f })),
@@ -35,7 +35,7 @@ function calculator(min, max, lang = 'es') {
 const purity = { 10: 0.4167, 14: 0.5833, 18: 0.75, 22: 0.9167, 24: 1 };
 for (const [min, max] of [[0.90, 0.91], [0.85, 0.88]]) {
   const c = calculator(min, max);
-  assert.ok(c.elements.get('app').innerHTML.includes(`${min * 100}–${max * 100}%`));
+  assert.ok(!c.elements.get('app').innerHTML.includes(`${min * 100}–${max * 100}%`));
   for (const karat of Object.keys(purity)) for (const form of ['solid', 'semi-solid']) for (const condition of ['new', 'old']) {
     c.click('k' + karat); c.click(form); c.click(condition); c.weight('10');
     const upper = Math.max(min, max - (form === 'semi-solid' ? 0.01 : 0) - (condition === 'old' ? 0.01 : 0));
@@ -43,7 +43,6 @@ for (const [min, max] of [[0.90, 0.91], [0.85, 0.88]]) {
     const lowPay = money(1000 * purity[karat] * min), highPay = money(1000 * purity[karat] * upper);
     assert.equal(c.elements.get('payout-min').textContent, lowPay);
     assert.equal(c.elements.get('payout-max').textContent, highPay);
-    assert.equal(c.elements.get('rate').textContent, `${(min * 100).toFixed(0)}–${(upper * 100).toFixed(0)}%`);
     assert.ok(decodeURIComponent(c.elements.get('quote-cta').href).includes(`${lowPay} – ${highPay} USD`));
   }
   for (const invalid of ['', '-2', 'Infinity', '1e999', 'NaN', 'abc']) {
@@ -79,7 +78,7 @@ chartContext.window.DKYSell.render();
 assert.deepEqual(JSON.parse(saved.get('dky-chart-observations-v2')), []);
 assert.equal(chartElement('chart-price').textContent, '$100.00');
 assert.ok(chartElement('chart-label').textContent.includes('Reference price'));
-assert.ok(chartElement('chart-content').innerHTML.includes('actual price observations'));
+assert.ok(chartElement('chart-content').innerHTML.includes('M12,120 L708,120'));
 state.source = 'test-source';
 subscribers.forEach(fn => fn(state));
 assert.equal(JSON.parse(saved.get('dky-chart-observations-v2')).length, 1);

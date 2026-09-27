@@ -4,7 +4,6 @@ window.DKYHome = (function() {
     const t = key => window.DKYI18n.t(key);
     const app = document.getElementById("app");
     const cfg = window.DKY_CONFIG;
-    const range = `${Math.round(cfg.BUYBACK_MIN_PCT * 100)}–${Math.round(cfg.BUYBACK_MAX_PCT * 100)}%`;
     const contact = `https://wa.me/${encodeURIComponent(cfg.WHATSAPP_NUMBER)}?text=${encodeURIComponent(t("home_contact_message"))}`;
     app.innerHTML = `
       <section class="home-hero container">
@@ -40,16 +39,10 @@ window.DKYHome = (function() {
             <span class="eyebrow">${t("sell_gold")}</span>
             <h3>${t("home_sell_title")}</h3>
             <p>${t("home_sell_desc")}</p>
-            <div class="buyback-highlight"><strong>${range}</strong><span>${t("buyback_basis")}</span></div>
             <a href="/sell-gold" class="text-link">${t("calculate_gold")} <span aria-hidden="true">↗</span></a>
             <p class="story-note">${t("final_offer_note")}</p>
           </div>
         </div>
-      </section>
-      <section class="home-campaign container" aria-labelledby="campaign-teaser-title">
-        <div class="campaign-teaser-mark" aria-hidden="true">?</div>
-        <div><p class="eyebrow">${t("campaign_eyebrow")}</p><h2 id="campaign-teaser-title">${t("campaign_teaser_title")}</h2><p>${t("campaign_teaser_desc")}</p></div>
-        <a href="/laura" class="btn-primary">${t("campaign_discover")} <span aria-hidden="true">↗</span></a>
       </section>
       <section class="home-service container">
         <div><p class="eyebrow">${t("home_service_eyebrow")}</p><h2>${t("home_service_title")}</h2></div>

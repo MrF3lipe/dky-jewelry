@@ -10,7 +10,6 @@ window.DKYSell = (function() {
   const $ = (sel, root) => (root || document).querySelector(sel);
   const fmtMoney = (n) => "$" + Math.round(n).toLocaleString();
   const fmtMoney2 = (n) => "$" + n.toFixed(2);
-  const fmtRate = (min, max) => (min * 100).toFixed(0) + "–" + (max * 100).toFixed(0) + "%";
   
   function setupChart() {
     const STORAGE = "dky-chart-observations-v2";
@@ -65,7 +64,13 @@ window.DKYSell = (function() {
         ? (spanish ? "Estimación con precio de referencia. Confirmaremos el precio en la evaluación." : "Estimate based on a reference price. We will confirm pricing during evaluation.")
         : (spanish ? "Fuente: " : "Source: ") + (state?.source || "—") + " · " + updated;
       if (data.length < 2) {
-        content.innerHTML = '<text x="360" y="120" text-anchor="middle" fill="currentColor" opacity="0.65" font-size="12">' + (spanish ? "El gráfico aparecerá al reunir cotizaciones reales." : "Chart appears as actual price observations are collected.") + '</text>';
+        const reference = state?.perGram;
+        content.innerHTML = reference == null
+          ? '<text x="360" y="120" text-anchor="middle" fill="currentColor" opacity="0.65" font-size="12">' + (spanish ? "Esperando la cotización del oro." : "Waiting for the gold quote.") + '</text>'
+          : '<path d="M12,120 L708,120" fill="none" stroke="url(#goldStroke)" stroke-width="2.4" stroke-linecap="round" />' +
+            '<circle cx="708" cy="120" r="5" fill="var(--gold-bright)" />' +
+            '<circle cx="708" cy="120" r="11" fill="var(--gold-bright)" opacity="0.18"><animate attributeName="r" values="7;15;7" dur="2.2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.35;0;0.35" dur="2.2s" repeatCount="indefinite"/></circle>' +
+            '<text x="360" y="155" text-anchor="middle" fill="currentColor" opacity="0.65" font-size="12">' + (spanish ? "La tendencia aparecerá con nuevas cotizaciones." : "Trend appears as new quotes arrive.") + '</text>';
         $("#chart-change").textContent = "";
         if (stats) stats.innerHTML = "";
         return;
@@ -176,13 +181,11 @@ window.DKYSell = (function() {
     const payoutMax = document.getElementById("payout-max");
     const pureGramsEl = document.getElementById("pure-grams");
     const spotValueEl = document.getElementById("spot-value");
-    const rateEl = document.getElementById("rate");
     
     if (payoutMin) payoutMin.textContent = fmtMoney(minPay);
     if (payoutMax) payoutMax.textContent = fmtMoney(maxPay);
     if (pureGramsEl) pureGramsEl.textContent = pureGrams.toFixed(2) + " g";
     if (spotValueEl) spotValueEl.textContent = fmtMoney2(goldValue);
-    if (rateEl) rateEl.textContent = fmtRate(minPct, maxPct);
     
     const i18n = window.DKYI18n;
     const lang = i18n?.getLang() || "es";
@@ -227,7 +230,6 @@ window.DKYSell = (function() {
             <span class="pill">⚖ ${t("sell_your_gold_showcase")}</span>
             <h1>${t("sell_title")}</h1>
             <p>${t("sell_desc")}</p>
-            <div class="buyback-promise"><span>${t("buyback_intro")}</span><strong>${fmtRate(cfg.BUYBACK_MIN_PCT, cfg.BUYBACK_MAX_PCT)}</strong><span>${t("buyback_basis")}</span></div>
           </header>
 
           <div class="chart" id="chart-root">
@@ -310,7 +312,6 @@ window.DKYSell = (function() {
               <ul class="quote-list">
                 <li><span>${t("pure_gold_content")}</span><span id="pure-grams">— g</span></li>
                 <li><span>${t("spot_value")}</span><span id="spot-value">$—</span></li>
-                <li><span>${t("buyback_rate")}</span><span id="rate">—</span></li>
               </ul>
               <a class="btn-primary quote-cta" id="quote-cta" href="#" target="_blank">${t("get_quote_whatsapp")}</a>
               <p class="quote-foot">${t("final_offer_note")}</p>
