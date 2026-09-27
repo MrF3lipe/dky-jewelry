@@ -1,6 +1,6 @@
 window.DKYShop = (function() {
   let PRODUCTS = [];
-  let activeCat = "all"; // Usamos identificadores fijos: "all", "necklaces", "rings", "earrings", "bracelets"
+  let activeCat = "all"; // IDs de catálogo: all, necklaces, rings, earrings, bracelets, other (Dijes)
   let justAdded = null;
   let timeout = null;
   let initialized = false;
@@ -66,7 +66,8 @@ window.DKYShop = (function() {
       { id: "necklaces", label: t("cat_necklaces") },
       { id: "rings", label: t("cat_rings") },
       { id: "earrings", label: t("cat_earrings") },
-      { id: "bracelets", label: t("cat_bracelets") }
+      { id: "bracelets", label: t("cat_bracelets") },
+      { id: "other", label: t("cat_other") }
     ];
 
     container.innerHTML = `

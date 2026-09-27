@@ -210,8 +210,7 @@ window.DKYCart = (function() {
         }
         
         const name = getProductText(i.product, 'name', lang);
-        const weightStr = i.product.weightGrams > 0 ? `, ${i.product.weightGrams}g` : '';
-        lines.push((idx + 1) + ". " + name + " (" + i.product.karat + "k, " + weightStr + ") — cantidad " + i.qty +
+        lines.push((idx + 1) + ". " + name + " (" + i.product.karat + "k) — cantidad " + i.qty +
           " — " + priceText + " (total aprox: " + totalText + ")");
       });
       lines.push("");
@@ -239,8 +238,7 @@ window.DKYCart = (function() {
         }
         
         const name = getProductText(i.product, 'name', lang);
-        const weightStr = i.product.weightGrams > 0 ? `, ${i.product.weightGrams}g` : '';
-        lines.push((idx + 1) + ". " + name + " (" + i.product.karat + "k, " + weightStr + ") — qty " + i.qty +
+        lines.push((idx + 1) + ". " + name + " (" + i.product.karat + "k) — qty " + i.qty +
           " — " + priceText + " (approx total: " + totalText + ")");
       });
       lines.push("");
@@ -273,7 +271,7 @@ window.DKYCart = (function() {
           <div class="info-top">
             <div>
               <div class="name">${escape(productName)}</div>
-              <div class="meta">${escape(i.product.karat)}k${i.product.weightGrams > 0 ? ' · ' + escape(i.product.weightGrams) + 'g' : ''}</div>
+              <div class="meta">${escape(i.product.karat)}k</div>
               ${i.product.priceType !== "fixed" ? `<div class="meta" style="color: var(--gold-bright); font-size: 10px;">${i.product.priceType === "range" ? (i18n ? i18n.t("estimated_price") : "Estimated") : (i18n ? i18n.t("check_price") : "Check")}</div>` : ''}
             </div>
             <button type="button" class="remove" aria-label="${lang === 'es' ? 'Eliminar' : 'Remove'} ${escape(productName)}" data-remove="${escape(i.product.id)}">

@@ -71,7 +71,8 @@ window.DKYI18n = (function() {
       cat_necklaces: "Collares",
       cat_rings: "Anillos",
       cat_earrings: "Aretes",
-      cat_bracelets: "Pulseras"
+      cat_bracelets: "Pulseras",
+      cat_other: "Dijes"
     },
     en: {
       similar_products: "Similar Products",
@@ -145,7 +146,8 @@ window.DKYI18n = (function() {
       cat_necklaces: "Necklaces",
       cat_rings: "Rings",
       cat_earrings: "Earrings",
-      cat_bracelets: "Bracelets"
+      cat_bracelets: "Bracelets",
+      cat_other: "Pendants"
     }
   };
   

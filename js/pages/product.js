@@ -154,9 +154,9 @@ window.DKYProduct = (function () {
         <div class="pp-info">
           <p class="pp-cat">${category}</p>
           <h1>${escape(name)}</h1>
-          <!-- Kilataje dorado grande + peso (si > 0) -->
+          <!-- Kilataje de la pieza -->
           <div class="gold-text" style="font-size: 2.5rem; font-weight: 700; line-height: 1.1; margin-bottom: 1rem;">
-            ${escape(p.karat)}k${p.weightGrams > 0 ? ' · ' + escape(p.weightGrams) + 'g' : ''}
+            ${escape(p.karat)}k
           </div>
 
           <!-- Precio o mensaje de consulta -->
