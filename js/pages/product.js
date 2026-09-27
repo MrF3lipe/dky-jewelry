@@ -28,7 +28,9 @@ window.DKYProduct = (function () {
     return window.DKYI18n?.t('check_price') || 'Consultar precio';
   }
   function safeImage(value) {
-    try { const url = new URL(value, window.location.href); return /^https?:$/.test(url.protocol) ? escape(url.href) : ''; }
+    const source = String(value || '').trim();
+    if (/^data:image\/(?:avif|gif|jpe?g|png|webp);base64,[a-z0-9+/=\s]+$/i.test(source)) return source;
+    try { const url = new URL(source, window.location.href); return /^https?:$/.test(url.protocol) ? escape(url.href) : ''; }
     catch { return ''; }
   }
 
