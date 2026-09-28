@@ -18,7 +18,7 @@ window.DKYRouter = (function() {
   }
   
   function navigate() {
-    const path = window.location.pathname || "/";
+    const path = window.location.hash.startsWith('#/') ? window.location.hash.slice(1) : (window.location.pathname || "/");
     const parts = path.split("/").filter(Boolean);
   
     
@@ -67,6 +67,7 @@ window.DKYRouter = (function() {
     
     // Botones atrás/adelante del navegador
     window.addEventListener("popstate", navigate);
+    window.addEventListener("hashchange", navigate);
     
     // Cambio de idioma
     window.addEventListener('langchange', () => navigate());
@@ -91,7 +92,7 @@ window.DKYRouter = (function() {
       
       // Prevenir navegación normal y usar history API
       e.preventDefault();
-      window.history.pushState(null, "", href);
+      window.history.pushState(null, "", "/#" + url.pathname + url.search + url.hash);
       navigate();
     });
   }

@@ -10,7 +10,7 @@
       var restore = sessionStorage.getItem('dky_restore_path');
       if (restore) {
         sessionStorage.removeItem('dky_restore_path');
-        history.replaceState(null, '', restore);
+        history.replaceState(null, '', '/#' + restore);
       }
     })();
   </script>
