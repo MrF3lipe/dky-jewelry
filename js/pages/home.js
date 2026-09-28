@@ -17,8 +17,12 @@ window.DKYHome = (function() {
           </div>
           <div class="hero-signature"><span class="signature-line"></span><span>${t("footer_tagline")}</span></div>
         </div>
-        <figure class="hero-photo">
-          <img src="assets/dky-jewelry-experience.jpg" width="1200" height="1000" alt="${t("hero_image_alt")}" fetchpriority="high">
+        <figure class="hero-photo hero-carousel" aria-label="Galería DKY Jewelry">
+          <div class="hero-carousel-track">
+            <img class="is-active" src="assets/dky-jewelry-experience.jpg" width="1200" height="1000" alt="${t("hero_image_alt")}" fetchpriority="high">
+            <img src="assets/dky-shopping-on-phone.jpg" width="1200" height="1000" alt="Cliente de DKY Jewelry explorando joyas desde su teléfono" loading="lazy">
+          </div>
+          <div class="hero-carousel-controls"><button type="button" data-hero-prev aria-label="Imagen anterior">←</button><div class="hero-carousel-dots"><button type="button" class="is-active" data-hero-slide="0" aria-label="Ver imagen 1"></button><button type="button" data-hero-slide="1" aria-label="Ver imagen 2"></button></div><button type="button" data-hero-next aria-label="Imagen siguiente">→</button></div>
           <figcaption><span>THE GOLD EDIT</span><span>14k · 18k · 22k</span></figcaption>
         </figure>
       </section>
@@ -62,7 +66,15 @@ window.DKYHome = (function() {
     const onProducts = event => renderPreowned(event.detail);
     document.addEventListener('productsLoaded', onProducts);
     const disposeTicker = window.DKYSpot.bindTicker();
-    return () => { document.removeEventListener('productsLoaded', onProducts); disposeTicker?.(); };
+    const slides = [...app.querySelectorAll('.hero-carousel-track img')];
+    const dots = [...app.querySelectorAll('[data-hero-slide]')];
+    let activeSlide = 0;
+    const showSlide = index => { activeSlide = (index + slides.length) % slides.length; slides.forEach((slide, i) => slide.classList.toggle('is-active', i === activeSlide)); dots.forEach((dot, i) => dot.classList.toggle('is-active', i === activeSlide)); };
+    const timer = window.setInterval(() => showSlide(activeSlide + 1), 5500);
+    app.querySelector('[data-hero-prev]')?.addEventListener('click', () => showSlide(activeSlide - 1));
+    app.querySelector('[data-hero-next]')?.addEventListener('click', () => showSlide(activeSlide + 1));
+    dots.forEach((dot, index) => dot.addEventListener('click', () => showSlide(index)));
+    return () => { document.removeEventListener('productsLoaded', onProducts); disposeTicker?.(); window.clearInterval(timer); };
   }
   return { render };
 })();
