@@ -7,6 +7,7 @@ window.DKYProducts = (function() {
   let products = [];
   let status = 'loading';
   const CACHE_NAME = 'dky-storefront-products-v2';
+  const IMAGE_CACHE_NAME = 'dky-storefront-product-images-v1';
   
   function normalizeProduct(raw, preowned) {
     return {
@@ -46,6 +47,30 @@ window.DKYProducts = (function() {
     status = 'ready';
     window.DKY_PRODUCTS = products;
     document.dispatchEvent(new CustomEvent('productsLoaded', { detail: products }));
+    loadMissingImages();
+  }
+
+  async function loadMissingImages() {
+    const missing = products.filter(product => !product.preowned && !product.image);
+    if (!missing.length || !('caches' in window)) return;
+    const cache = await caches.open(IMAGE_CACHE_NAME);
+    await Promise.all(missing.map(async product => {
+      const url = `${API_URL}?id=${encodeURIComponent(product.id)}`;
+      try {
+        const stored = await cache.match(url);
+        const response = stored || await fetch(url, { cache: 'no-store' });
+        if (!response.ok) return;
+        if (!stored) await cache.put(url, response.clone());
+        const list = await response.json();
+        const item = Array.isArray(list) ? list[0] : list;
+        if (!item?.image) return;
+        const target = products.find(current => current.id === String(product.id) && !current.preowned);
+        if (!target) return;
+        target.image = item.image;
+        window.DKY_PRODUCTS = products;
+        document.dispatchEvent(new CustomEvent('productsLoaded', { detail: products }));
+      } catch (_) { /* Se reintentará al recargar. */ }
+    }));
   }
 
   async function cacheResponse(cache, url, response) {
