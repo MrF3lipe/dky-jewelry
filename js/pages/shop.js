@@ -93,7 +93,6 @@ window.DKYShop = (function() {
                   <img src="${safeImage(p.image)}" alt="${escape(getProductText(p, 'name', currentLang))}" loading="lazy" decoding="async" />
                   <span class="karat-tag">${escape(p.karat)}k</span>
                 </div>
-                <div class="product-name">${escape(getProductText(p, 'name', currentLang))}</div>
                 <div class="product-price">${getDisplayPrice(p)}</div>
               </a>
             <button type="button" class="add-btn ${justAdded === p.id ? "added" : ""}" data-add="${escape(p.id)}">

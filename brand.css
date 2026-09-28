@@ -139,7 +139,7 @@ body { line-height: 1.6; }
 #chart-svg { touch-action: pan-y; }
 .empty-state { color: var(--muted-fg); }
 .loading, .empty-state { padding: 50px 24px; }
-.pp-img-frame { border-radius: 4px; }
+.pp-img-frame { border-radius: 4px; aspect-ratio: 1; align-self: start; }
 .pp-info h1 { font: 500 clamp(30px, 4vw, 48px)/1.2 var(--font-editorial); }
 .preowned-card .product-img { position: relative; }
 .preowned-badge, .product-preowned-label { display: inline-flex; align-items: center; color: var(--background); background: var(--gold-bright); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
