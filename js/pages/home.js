@@ -26,12 +26,6 @@ window.DKYHome = (function() {
           <figcaption><span>THE GOLD EDIT</span><span>14k · 18k · 22k</span></figcaption>
         </figure>
       </section>
-      <div class="service-strip">
-        <div class="container service-strip-inner">
-          <span>${t("home_service_gold")}</span><span>${t("home_service_attention")}</span>
-          <a href="/sell-gold" class="spot-ticker">${window.DKYSpot.tickerHTML()}</a>
-        </div>
-      </div>
       <section class="home-paths container">
         <div class="section-heading"><h2>${t("home_paths_title")}</h2><p>${t("home_paths_desc")}</p></div>
         <div class="home-paths-grid">
@@ -48,6 +42,12 @@ window.DKYHome = (function() {
           </div>
         </div>
       </section>
+      <div class="service-strip">
+        <div class="container service-strip-inner">
+          <span>${t("home_service_gold")}</span><span>${t("home_service_attention")}</span>
+          <a href="/sell-gold" class="spot-ticker">${window.DKYSpot.tickerHTML()}</a>
+        </div>
+      </div>
       <section class="home-preowned container" aria-labelledby="home-preowned-title">
         <div class="section-heading"><h2 id="home-preowned-title">${t("preowned_title")}</h2><p>${t("preowned_desc")}</p></div>
         <div id="home-preowned-grid" class="products-grid"></div>
