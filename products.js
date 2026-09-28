@@ -6,7 +6,7 @@ window.DKYProducts = (function() {
   
   let products = [];
   let status = 'loading';
-  const CACHE_NAME = 'dky-storefront-products-v1';
+  const CACHE_NAME = 'dky-storefront-products-v2';
   
   function normalizeProduct(raw, preowned) {
     return {
