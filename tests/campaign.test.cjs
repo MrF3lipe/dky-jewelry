@@ -18,7 +18,7 @@ function fixture(lang = 'es') {
     window: { location: { href: 'https://www.dkygold.com/laura' },
       DKYI18n: { getLang: () => lang }, DKY_CONFIG: { WHATSAPP_NUMBER: '19414650463' },
       DKY_CAMPAIGN: { code: 'LAURA10', discountPercent: 10, productIds: [] },
-      DKY_PRODUCTS: [{ id: 1, name: { es: 'Anillo <oro>', en: 'Gold ring' }, image: '/ring.jpg' }, { id: 2, name: 'Excluded', image: 'javascript:alert(1)' }]
+      DKY_PRODUCTS: [{ id: 1, name: { es: 'Anillo <oro>', en: 'Gold ring' }, image: '/ring.jpg' }, { id: 2, name: 'Excluded', image: 'javascript:alert(1)', preowned: true }]
     },
     document: { getElementById: id => nodes[id], addEventListener: (name, fn) => listeners.set(name, fn), removeEventListener: name => listeners.delete(name) },
     navigator: { clipboard: { writeText: async value => { copied = value; } } },
@@ -32,7 +32,7 @@ function fixture(lang = 'es') {
   const f = fixture();
   let dispose = f.render();
   assert.match(f.nodes['campaign-products'].innerHTML, /Consulta las prendas participantes/);
-  assert.match(f.nodes['campaign-preowned-products'].innerHTML, /selección de joyas usadas/);
+  assert.match(f.nodes['campaign-preowned-products'].innerHTML, /Excluded/);
   assert.match(f.nodes.app.innerHTML, /claramente como usada/);
   assert.doesNotMatch(f.nodes['campaign-products'].innerHTML, /Anillo|Excluded/);
   assert.match(f.nodes['campaign-products'].innerHTML, /LAURA10.*10%/);

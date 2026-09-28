@@ -250,6 +250,33 @@ window.DKYI18n = (function() {
   "acima_link": "Finance with Acima"
 });
 
+  Object.assign(translations.es, {
+    nav_preowned: "Segunda mano",
+    preowned_title: "Joyas de segunda mano.",
+    preowned_desc: "Piezas únicas, revisadas y claramente identificadas según su condición.",
+    preowned_badge: "Segunda mano",
+    preowned_condition: "Condición",
+    preowned_empty: "La selección de segunda mano se está preparando.",
+    back_to_preowned: "← Volver a segunda mano",
+    condition_excelente: "Excelente",
+    condition_muy_buen_estado: "Muy buen estado",
+    condition_buen_estado: "Buen estado",
+    condition_con_detalles: "Con detalles"
+  });
+  Object.assign(translations.en, {
+    nav_preowned: "Pre-owned",
+    preowned_title: "Pre-owned jewelry.",
+    preowned_desc: "Unique pieces, inspected and clearly identified by condition.",
+    preowned_badge: "Pre-owned",
+    preowned_condition: "Condition",
+    preowned_empty: "The pre-owned selection is being prepared.",
+    back_to_preowned: "← Back to pre-owned",
+    condition_excelente: "Excellent",
+    condition_muy_buen_estado: "Very good condition",
+    condition_buen_estado: "Good condition",
+    condition_con_detalles: "With details"
+  });
+
   let currentLang = "es";
   
   function t(key) {

@@ -56,9 +56,10 @@ window.DKYShop = (function() {
     const currentLang = i18n ? i18n.getLang() : 'es';
 
     // Filtrar productos según categoría activa (ID fijo)
+    const storefrontProducts = PRODUCTS.filter(p => !p.preowned);
     const filtered = activeCat === "all" 
-      ? PRODUCTS 
-      : PRODUCTS.filter(p => getCategoryId(p, currentLang) === activeCat);
+      ? storefrontProducts
+      : storefrontProducts.filter(p => getCategoryId(p, currentLang) === activeCat);
 
     // Lista de categorías con identificadores fijos y etiquetas traducidas
     const catItems = [
@@ -77,8 +78,8 @@ window.DKYShop = (function() {
             ${cat.label} 
             <span class="count">${
               cat.id === "all" 
-                ? PRODUCTS.length 
-                : PRODUCTS.filter(p => getCategoryId(p, currentLang) === cat.id).length
+                ? storefrontProducts.length
+                : storefrontProducts.filter(p => getCategoryId(p, currentLang) === cat.id).length
             }</span>
           </button>
         `).join("")}

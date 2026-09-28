@@ -44,11 +44,25 @@ window.DKYHome = (function() {
           </div>
         </div>
       </section>
+      <section class="home-preowned container" aria-labelledby="home-preowned-title">
+        <div class="section-heading"><h2 id="home-preowned-title">${t("preowned_title")}</h2><p>${t("preowned_desc")}</p></div>
+        <div id="home-preowned-grid" class="products-grid"></div>
+        <a class="text-link" href="/segunda-mano">${t("nav_preowned")} <span aria-hidden="true">↗</span></a>
+      </section>
       <section class="home-service container">
         <div><p class="eyebrow">${t("home_service_eyebrow")}</p><h2>${t("home_service_title")}</h2></div>
         <div><p>${t("home_service_desc")}</p><a href="${contact}" target="_blank" rel="noopener noreferrer" class="text-link">${t("inquire_whatsapp")} <span aria-hidden="true">↗</span></a></div>
       </section>`;
-    return window.DKYSpot.bindTicker();
+    const preownedGrid = document.getElementById('home-preowned-grid');
+    const renderPreowned = (items) => {
+      const products = (Array.isArray(items) ? items : []).filter(product => product.preowned).slice(0, 3);
+      preownedGrid.innerHTML = products.length ? products.map(product => `<a class="home-preowned-card" href="/segunda-mano/${encodeURIComponent(product.id)}"><div><img src="${product.image || ''}" alt="${product.name?.es || ''}" loading="lazy"><span>${t('preowned_badge')}</span></div><strong>${product.name?.es || ''}</strong><small>${t('preowned_condition')}: ${t('condition_' + product.conditionGrade)}</small></a>`).join('') : `<p class="muted">${t('preowned_empty')}</p>`;
+    };
+    renderPreowned(window.DKYProducts?.getProducts());
+    const onProducts = event => renderPreowned(event.detail);
+    document.addEventListener('productsLoaded', onProducts);
+    const disposeTicker = window.DKYSpot.bindTicker();
+    return () => { document.removeEventListener('productsLoaded', onProducts); disposeTicker?.(); };
   }
   return { render };
 })();

@@ -30,6 +30,10 @@ window.DKYRouter = (function() {
       pageFn = window.DKYShop ? () => window.DKYShop.render() : null;
     } else if (parts[0] === "shop" && parts.length === 2) {
       pageFn = window.DKYProduct ? () => window.DKYProduct.render(parts[1]) : null;
+    } else if (parts[0] === "segunda-mano" && parts.length === 1) {
+      pageFn = window.DKYPreowned ? () => window.DKYPreowned.render() : null;
+    } else if (parts[0] === "segunda-mano" && parts.length === 2) {
+      pageFn = window.DKYProduct ? () => window.DKYProduct.render(parts[1], true) : null;
     } else if (parts[0] === "laura" && parts.length === 1) {
       pageFn = window.DKYCampaign ? () => window.DKYCampaign.render() : null;
     } else if (parts[0] === "sell-gold" && parts.length === 1) {

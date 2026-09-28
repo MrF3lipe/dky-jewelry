@@ -1,6 +1,7 @@
 window.DKYProduct = (function () {
   let PRODUCTS = [];
   let currentProductId = null;
+  let currentProductPreowned = false;
 
 
   function ensureProducts() {
@@ -86,7 +87,7 @@ window.DKYProduct = (function () {
 
 
 
-  function renderContent(id) {
+  function renderContent(id, preowned) {
     const i18n = window.DKYI18n;
     const cart = window.DKYCart;
     const t = (key) => i18n ? i18n.t(key) : key;
@@ -96,13 +97,13 @@ window.DKYProduct = (function () {
     const products = (window.DKY_PRODUCTS && window.DKY_PRODUCTS.length)
       ? window.DKY_PRODUCTS
       : PRODUCTS;
-    const p = products.find(x => String(x.id) === String(id));
+    const p = products.find(x => String(x.id) === String(id) && !!x.preowned === !!preowned);
     if (!p) {
       if (window.DKYNotFound) window.DKYNotFound.render();
       return;
     }
 
-    const sameCategory = PRODUCTS.filter(x => x.category === p.category && x.id !== p.id);
+    const sameCategory = PRODUCTS.filter(x => x.category === p.category && x.id !== p.id && !!x.preowned === !!preowned);
     function shuffle(arr) {
       const a = [...arr];
       for (let i = a.length - 1; i > 0; i--) {
@@ -123,7 +124,7 @@ window.DKYProduct = (function () {
       items.forEach(sim => {
         const simName = getProductText(sim, 'name', lang);
         html += `
-          <a href="/shop/${encodeURIComponent(sim.id)}" class="similar-card">
+          <a href="${preowned ? '/segunda-mano/' : '/shop/'}${encodeURIComponent(sim.id)}" class="similar-card">
             <div class="similar-img">
               <img src="${safeImage(sim.image)}" alt="${escape(simName)}" loading="lazy" />
               <span class="karat-tag small-karat">${escape(sim.karat)}k</span>
@@ -148,11 +149,12 @@ window.DKYProduct = (function () {
     const related = PRODUCTS.filter(x => x.id !== id).slice(0, 3);
 
     document.getElementById("app").innerHTML = `
-      <section class="product-page"><div class="container"><a class="back-link" href="/shop">${t("back_to_shop")}</a>
+      <section class="product-page"><div class="container"><a class="back-link" href="${preowned ? '/segunda-mano' : '/shop'}">${preowned ? t('back_to_preowned') : t("back_to_shop")}</a>
       <div class="pp-grid">
         <div class="pp-img-frame"><img src="${safeImage(p.image)}" alt="${escape(name)}" /></div>
         <div class="pp-info">
           <p class="pp-cat">${category}</p>
+          ${preowned ? `<p class="product-preowned-label">${t('preowned_badge')} · ${t('preowned_condition')}: ${escape(t('condition_' + p.conditionGrade) || p.conditionGrade)}</p>` : ''}
           <h1>${escape(name)}</h1>
           <!-- Kilataje de la pieza -->
           <div class="gold-text" style="font-size: 2.5rem; font-weight: 700; line-height: 1.1; margin-bottom: 1rem;">
@@ -196,19 +198,20 @@ window.DKYProduct = (function () {
     }
   }
 
-  function render(id) {
+  function render(id, preowned = false) {
     currentProductId = id;
+    currentProductPreowned = preowned;
     function update() {
       if (currentProductId !== id) return;
       const spanish = window.DKYI18n?.getLang() !== 'en';
       const status = window.DKYProducts?.getStatus();
       if (status === 'ready' || (!status && ensureProducts())) {
         PRODUCTS = window.DKYProducts?.getProducts() || window.DKY_PRODUCTS || [];
-        renderContent(id);
+        renderContent(id, preowned);
         return;
       }
       const error = status === 'error';
-      document.getElementById('app').innerHTML = `<section class="product-page"><div class="container"><div class="empty-state" role="status"><p>${error ? (spanish ? 'No pudimos cargar esta pieza.' : 'We could not load this piece.') : (spanish ? 'Cargando pieza…' : 'Loading piece…')}</p>${error ? `<button type="button" class="btn-outline" id="retry-product">${spanish ? 'Volver a intentar' : 'Try again'}</button>` : ''}<a class="back-link" href="/shop">${window.DKYI18n?.t('back_to_shop') || 'Volver a la colección'}</a></div></div></section>`;
+      document.getElementById('app').innerHTML = `<section class="product-page"><div class="container"><div class="empty-state" role="status"><p>${error ? (spanish ? 'No pudimos cargar esta pieza.' : 'We could not load this piece.') : (spanish ? 'Cargando pieza…' : 'Loading piece…')}</p>${error ? `<button type="button" class="btn-outline" id="retry-product">${spanish ? 'Volver a intentar' : 'Try again'}</button>` : ''}<a class="back-link" href="${preowned ? '/segunda-mano' : '/shop'}">${preowned ? window.DKYI18n?.t('back_to_preowned') : (window.DKYI18n?.t('back_to_shop') || 'Volver a la colección')}</a></div></div></section>`;
       if (error) document.getElementById('retry-product')?.addEventListener('click', () => window.DKYProducts.fetchProducts());
     }
     document.addEventListener('productsLoaded', update);
@@ -228,9 +231,9 @@ window.DKYProduct = (function () {
   }
 
   window.addEventListener('langchange', function () {
-    if (currentProductId && window.location.hash.includes('/shop/')) {
+    if (currentProductId) {
       ensureProducts();
-      renderContent(currentProductId);
+      renderContent(currentProductId, currentProductPreowned);
     }
   });
 

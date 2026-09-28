@@ -106,12 +106,13 @@ window.DKYCampaign = (function () {
         const name = typeof p.name === "object" ? p.name[lang] || p.name.es || "" : p.name;
         const inquiry = preowned ? `${t.preownedMessage} Me interesa: ${name} (ID: ${p.id}).` : `${t.productMessage}${name} (ID: ${p.id}).`;
         const label = preowned ? t.preownedLabel : `${escape(discount)}% ${t.offer}`;
-        return `<article class="campaign-product"><a href="/shop/${encodeURIComponent(p.id)}"><div class="campaign-product-photo"><img src="${safeImage(p.image)}" alt="${escape(name)}" loading="lazy"><span>${label}</span></div><h3>${escape(name)}</h3></a><a class="campaign-text-link" href="${escape(whatsapp(inquiry))}" target="_blank" rel="noopener noreferrer">${t.productInquire} <span aria-hidden="true">↗</span></a></article>`;
+        const href = preowned ? `/segunda-mano/${encodeURIComponent(p.id)}` : `/shop/${encodeURIComponent(p.id)}`;
+        return `<article class="campaign-product"><a href="${href}"><div class="campaign-product-photo"><img src="${safeImage(p.image)}" alt="${escape(name)}" loading="lazy"><span>${label}</span></div><h3>${escape(name)}</h3></a><a class="campaign-text-link" href="${escape(whatsapp(inquiry))}" target="_blank" rel="noopener noreferrer">${t.productInquire} <span aria-hidden="true">↗</span></a></article>`;
       }).join("")}</div>` : `<div class="campaign-empty"><span class="campaign-empty-mark" aria-hidden="true">✦</span><div><h3>${emptyTitle}</h3><p>${emptyText}</p><a class="btn-primary" href="${escape(whatsapp(message))}" target="_blank" rel="noopener noreferrer">${t.inquire} <span aria-hidden="true">↗</span></a></div></div>`;
     }
     function renderAll(products) {
       renderProducts(products, config.productIds, productsContainer, false);
-      renderProducts(products, config.preownedProductIds, preownedContainer, true);
+      renderProducts(products, (Array.isArray(products) ? products : []).filter(product => product.preowned).map(product => product.id), preownedContainer, true);
     }
     renderAll(window.DKY_PRODUCTS);
     const onProducts = event => renderAll(event.detail);

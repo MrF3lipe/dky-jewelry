@@ -2,11 +2,12 @@ window.DKYProducts = (function() {
   "use strict";
   
   const API_URL = window.DKY_CONFIG.API_BASE_URL + '/web_products.php';
+  const PREOWNED_API_URL = window.DKY_CONFIG.API_BASE_URL + '/web_preowned_products.php';
   
   let products = [];
   let status = 'loading';
   
-  function normalizeProduct(raw) {
+  function normalizeProduct(raw, preowned) {
     return {
       id: String(raw.id),
       image: raw.image || '',
@@ -33,6 +34,9 @@ window.DKYProducts = (function() {
       priceUsd: Number.isFinite(Number(raw.price)) && Number(raw.price) > 0 ? Number(raw.price) : null,
       priceMinUsd: null,
       priceMaxUsd: null,
+      preowned: !!preowned,
+      conditionGrade: raw.conditionGrade || '',
+      conditionNotes: raw.conditionNotes || '',
     };
   }
   
@@ -40,11 +44,13 @@ window.DKYProducts = (function() {
     status = 'loading';
     document.dispatchEvent(new CustomEvent('productsStatus'));
     try {
-      const response = await fetch(API_URL);
-      if (!response.ok) throw new Error('Products request failed: ' + response.status);
-      const rawProducts = await response.json();
-      if (!Array.isArray(rawProducts)) throw new Error('Invalid product response');
-      products = rawProducts.map(normalizeProduct);
+      const [productsResult, preownedResult] = await Promise.allSettled([
+        fetch(API_URL).then(response => { if (!response.ok) throw new Error('Products request failed: ' + response.status); return response.json(); }),
+        fetch(PREOWNED_API_URL).then(response => response.ok ? response.json() : [])
+      ]);
+      if (productsResult.status !== 'fulfilled' || !Array.isArray(productsResult.value)) throw new Error('Invalid product response');
+      const preowned = preownedResult.status === 'fulfilled' && Array.isArray(preownedResult.value) ? preownedResult.value : [];
+      products = [...productsResult.value.map(item => normalizeProduct(item, false)), ...preowned.map(item => normalizeProduct(item, true))];
       status = 'ready';
       window.DKY_PRODUCTS = products;
       document.dispatchEvent(new CustomEvent('productsLoaded', { detail: products }));
