@@ -172,6 +172,9 @@ body { line-height: 1.6; }
 .footer-inner { grid-template-columns: 1fr auto auto auto; align-items: center; gap: 32px; }
 .footer-inner > a { font-size: 12px; color: var(--muted-fg); padding-block: 12px; }
 .footer-inner > a:hover { color: var(--gold-bright); }
+.footer-social { display: flex; align-items: center; gap: 14px; }
+.footer-social a { color: var(--muted-fg); font-size: 12px; padding-block: 12px; }
+.footer-social a:hover { color: var(--gold-bright); }
 .footer-inner .brand-text { font-size: 18px; }
 .footer-inner .brand-text .small { font: 11px var(--font-body); letter-spacing: 0; }
 .last { min-width: 0; max-width: 1184px; margin: 28px auto 0; padding-inline: 20px; font-size: 10px; text-align: center; }
@@ -238,6 +241,7 @@ body { line-height: 1.6; }
   .financing-link { display: inline-block; margin-top: 12px; }
   .footer-inner { grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .footer-inner .brand { grid-column: 1 / -1; margin-bottom: 8px; }
+  .footer-social { grid-column: 1 / -1; justify-content: center; }
   #site-footer { margin-top: 56px; }
 }
 @media (max-width: 359px) {
