@@ -1,2 +1,3 @@
 User-agent: *
 Disallow: /laura
+Sitemap: https://www.dkygold.com/sitemap.xml
